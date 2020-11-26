@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "ES2015",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "outDir": "public/js"
+    },
+    "include": [
+        "public/src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
+}
