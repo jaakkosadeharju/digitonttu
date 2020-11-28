@@ -120,7 +120,7 @@ var Player = (function () {
             this.drawImageCenter(player, this.position.x, this.position.y, 150, 250, 1 / 5, this.angle);
         }
         collectedPresents.forEach(function (present, i) {
-            var presentSlot = _this.positionHistory[_this.positionHistory.length - (i + 1) * 10];
+            var presentSlot = _this.positionHistory[_this.positionHistory.length - (i + 1) * 4];
             present.position.x = presentSlot.x - present.width / 2;
             present.position.y = presentSlot.y - present.height / 2;
         });

@@ -8,7 +8,7 @@ var Clock = (function () {
         this.ctx.fillStyle = '#afa5';
         this.ctx.textAlign = "center";
         var seconds = Math.max(0, (time / 1000));
-        var formatted = (Math.round(seconds * 10) / 10).toFixed(1);
+        var formatted = Math.round(seconds).toFixed();
         this.ctx.fillText((formatted + " s").replace('.', ','), this.position.x, this.position.y);
     };
     return Clock;

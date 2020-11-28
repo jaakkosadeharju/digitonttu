@@ -76,7 +76,7 @@ const draw = () => {
 
 const initGame = () => {
     terrain = new Terrain(canvas, new Dimensions(areaWidth, areaHeight));
-    player = new Player(canvas, terrain, new Point(100, 600));
+    player = new Player(canvas, terrain, new Point(50, 600));
     presents = [new Present(canvas, terrain)];
     time = new Date();
     document.getElementById('high-score').innerText = highscore.toString();

@@ -14,7 +14,7 @@ export class Clock {
         this.ctx.fillStyle = '#afa5';
         this.ctx.textAlign = "center";
         const seconds = Math.max(0, (time / 1000));
-        const formatted = (Math.round(seconds * 10) / 10).toFixed(1)
+        const formatted = Math.round(seconds).toFixed();
         this.ctx.fillText(`${formatted} s`.replace('.', ','), this.position.x, this.position.y);
     }
 }

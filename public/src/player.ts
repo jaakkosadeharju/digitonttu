@@ -165,7 +165,7 @@ export class Player {
         }
 
         collectedPresents.forEach((present, i) => {
-            let presentSlot = this.positionHistory[this.positionHistory.length - (i + 1) * 10];
+            let presentSlot = this.positionHistory[this.positionHistory.length - (i + 1) * 4];
             present.position.x = presentSlot.x - present.width / 2;
             present.position.y = presentSlot.y - present.height / 2;
         });
