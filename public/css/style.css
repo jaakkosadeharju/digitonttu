@@ -163,6 +163,17 @@ button#start {
     display: block;
 }
 
+button#start:active,
+button#start:hover,
+button#start:focus {
+    background: #285f35;
+    outline: none;
+}
+button#start:active {
+    box-shadow: 0;
+    background: #1e3323;
+}
+
 button#dive {
     display: none;
     color: white;
@@ -178,10 +189,12 @@ button#dive {
 button#dive:active,
 button#dive:hover,
 button#dive:focus {
-    background: #333;
+    background: #555;
+    outline: none;
 }
 button#dive:active {
     box-shadow: 0;
+    background: #333;
 }
 
 body.started button#dive {
