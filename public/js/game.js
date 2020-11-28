@@ -111,14 +111,17 @@ diveButton.addEventListener('mouseup', function (e) {
 }, false);
 diveButton.addEventListener('touchstart', function (e) {
     player.handleDiveButtonPress();
+    diveButton.classList.add('active');
     e.preventDefault();
 }, false);
 diveButton.addEventListener('touchend', function (e) {
     player.hanldeDiveButtonRelease();
+    diveButton.classList.remove('active');
     e.preventDefault();
 }, false);
 diveButton.addEventListener('touchcancel', function (e) {
     player.hanldeDiveButtonRelease();
+    diveButton.classList.remove('active');
     e.preventDefault();
 }, false);
 //# sourceMappingURL=game.js.map

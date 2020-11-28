@@ -147,13 +147,16 @@ diveButton.addEventListener('mouseup', e => {
 
 diveButton.addEventListener('touchstart', e => {
     player.handleDiveButtonPress();
+    diveButton.classList.add('active')
     e.preventDefault();
 }, false);
 diveButton.addEventListener('touchend', e => {
     player.hanldeDiveButtonRelease();
+    diveButton.classList.remove('active')
     e.preventDefault();
 }, false);
 diveButton.addEventListener('touchcancel', e => {
     player.hanldeDiveButtonRelease();
+    diveButton.classList.remove('active')
     e.preventDefault();
 }, false);

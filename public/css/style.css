@@ -192,7 +192,8 @@ button#dive:focus {
     background: #555;
     outline: none;
 }
-button#dive:active {
+button#dive:active,
+button#dive.active {
     box-shadow: 0;
     background: #333;
 }
