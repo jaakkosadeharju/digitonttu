@@ -1,14 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.86, maximum-scale=5.0, minimum-scale=0.86">
     <title>Digitonttu</title>
     <link rel="stylesheet" href="/css/reset.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,200;0,400;0,700;1,200;1,400;1,700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <canvas id="game-area" width="1920" height="1080"></canvas>
     <script src="/js/game.js" type="module"></script>
+    <img src="/images/tonttu.png" alt="Tonttu" id="player">
+    <img src="/images/tonttu_v.png" alt="Tonttu" id="player-reversed">
+    <img src="/images/paketti.png" alt="Lahja" id="present">
+
+    <div id="menu-overlay">
+    </div>
+
+    <div id="top">
+        <div id="left">
+            <h1>
+                Digitonttu
+            </h1>
+            <p>
+                <ol>
+                    <li>Paina Aloita-nappia</li>
+                    <li>Kerää paketit</li>
+                    <li>Aikaa 20 s</li>
+                </ol>
+            </p>
+            <p style="padding: 2em; text-align: center; font-size: 120%;">Auta Digitonttua keräämään pukin hukkaamat lahjat ennen joulua. Aikaa 30 s!</p>
+        </div>
+        <div id="right"></div>
+    </div>
+    <div id="bottom">
+        <div id="right">
+            <p>
+                <h2>
+                    Tulos: <span id="result"></span>
+                </h2>
+            </p>
+            <p>
+                <h2>
+                    Ennätys: <span id="high-score"></span>
+                </h2>
+            </p>
+            <p>
+                <button type="button" id="start">Aloita</button>
+            </p>
+        </div>
+        <div id="left"></div>
+    </div>
+
+    <button id="dive">Lisää vauhtia!</button>
 </body>
+
 </html>

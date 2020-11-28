@@ -11,10 +11,10 @@ var Terrain = (function () {
         var _this = this;
         this.handleRadius = 20;
         this.handleStrokeWidth = 3;
-        this.maxVerticalHeight = function () { return _this.areaDimensions.height / 2; };
-        this.minVerticalHeight = function () { return _this.areaDimensions.height * (19 / 20); };
-        this.startDrag = function (e) {
-            var mouseCanvasPosition = new Point((e.clientX - _this.canvas.offsetLeft) / _this.canvas.offsetWidth * _this.canvas.width, (e.clientY - _this.canvas.offsetTop) / _this.canvas.offsetHeight * _this.canvas.height);
+        this.maxVerticalHeight = function () { return _this.areaDimensions.height * (14 / 20); };
+        this.minVerticalHeight = function () { return _this.areaDimensions.height * (17 / 20); };
+        this.startDrag = function (x, y) {
+            var mouseCanvasPosition = new Point((x - _this.canvas.offsetLeft) / _this.canvas.offsetWidth * _this.canvas.width, (y - _this.canvas.offsetTop) / _this.canvas.offsetHeight * _this.canvas.height);
             var closestPoint = _this.points.reduce(function (closest, p) {
                 return (p.distanceTo(mouseCanvasPosition) < closest.distanceTo(mouseCanvasPosition) ? p : closest);
             }, new Point(Infinity, Infinity));
@@ -22,14 +22,14 @@ var Terrain = (function () {
                 _this.draggingHandle = closestPoint;
             }
         };
-        this.moveTerrainHandle = function (e) {
-            var mouseCanvasPosition = new Point((e.clientX - _this.canvas.offsetLeft) / _this.canvas.offsetWidth * _this.canvas.width, (e.clientY - _this.canvas.offsetTop) / _this.canvas.offsetHeight * _this.canvas.height);
+        this.moveTerrainHandle = function (x, y) {
+            var mouseCanvasPosition = new Point((x - _this.canvas.offsetLeft) / _this.canvas.offsetWidth * _this.canvas.width, (y - _this.canvas.offsetTop) / _this.canvas.offsetHeight * _this.canvas.height);
             if (_this.draggingHandle) {
                 _this.draggingHandle.x = mouseCanvasPosition.x;
                 _this.draggingHandle.y = Math.max(Math.min(mouseCanvasPosition.y, _this.minVerticalHeight()), _this.maxVerticalHeight());
             }
         };
-        this.endDrag = function (e) {
+        this.endDrag = function () {
             if (_this.draggingHandle) {
                 _this.draggingHandle = null;
             }
@@ -65,14 +65,52 @@ var Terrain = (function () {
         this.points.forEach(function (p) {
             ctx.beginPath();
             ctx.arc(p.x, p.y, _this.handleRadius, 0, 2 * Math.PI);
-            ctx.fillStyle = '#dddddd';
+            ctx.fillStyle = '#dddddd99';
             ctx.fill();
             ctx.beginPath();
             ctx.arc(p.x, p.y, _this.handleRadius, 0, 2 * Math.PI);
-            ctx.strokeStyle = '#aaaaaa';
+            ctx.strokeStyle = '#aaaaaaff';
             ctx.lineWidth = _this.handleStrokeWidth;
             ctx.stroke();
         });
+    };
+    Terrain.prototype.getBezierXY = function (t, start, end) {
+        return {
+            x: Math.pow(1 - t, 3) * start.x + 3 * t * Math.pow(1 - t, 2) * end.cp1.x
+                + 3 * t * t * (1 - t) * end.cp2.x + t * t * t * end.x,
+            y: Math.pow(1 - t, 3) * start.y + 3 * t * Math.pow(1 - t, 2) * end.cp1.y
+                + 3 * t * t * (1 - t) * end.cp2.y + t * t * t * end.y
+        };
+    };
+    Terrain.prototype.getBezierAngle = function (t, start, end) {
+        var dx = Math.pow(1 - t, 2) * (end.cp1.x - start.x) + 2 * t * (1 - t) * (end.cp2.x - end.cp1.x) + t * t * (end.x - end.cp2.x);
+        var dy = Math.pow(1 - t, 2) * (end.cp1.y - start.y) + 2 * t * (1 - t) * (end.cp2.y - end.cp1.y) + t * t * (end.y - end.cp2.y);
+        return -Math.atan2(dx, dy) + 0.5 * Math.PI;
+    };
+    Terrain.prototype.getHeightAt = function (x) {
+        var points = this.pointsWithControlPoints().sort(function (a, b) { return a.x - b.x; });
+        var leftPoint;
+        var rightPoint;
+        if (x < 0 || x > this.areaDimensions.width) {
+            console.error("Cannot resolve terrain height at " + x);
+        }
+        for (var i = 0; i < points.length; i++) {
+            if (points[i].x > x) {
+                rightPoint = points[i];
+                leftPoint = points[i - 1];
+                break;
+            }
+        }
+        var t = 1;
+        for (var i = 1; i <= 100; ++i) {
+            if (this.getBezierXY(t, leftPoint, rightPoint).x < x) {
+                t += 0.5 / i;
+            }
+            else {
+                t -= 0.5 / i;
+            }
+        }
+        return [this.getBezierXY(t, leftPoint, rightPoint).y, this.getBezierAngle(t, leftPoint, rightPoint)];
     };
     Terrain.prototype.extrapolatedPoints = function () {
         var points = this.points;
@@ -108,9 +146,35 @@ var Terrain = (function () {
         }, []);
     };
     Terrain.prototype.addMouseEventListeners = function () {
-        this.canvas.onmousedown = this.startDrag;
-        this.canvas.onmousemove = this.moveTerrainHandle;
-        this.canvas.onmouseup = this.endDrag;
+        var _this = this;
+        this.canvas.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            _this.startDrag(e.clientX, e.clientY);
+        }, false);
+        this.canvas.addEventListener('mousemove', function (e) {
+            e.preventDefault();
+            _this.moveTerrainHandle(e.clientX, e.clientY);
+        }, false);
+        this.canvas.addEventListener('mouseup', function (e) {
+            e.preventDefault();
+            _this.endDrag();
+        }, false);
+        this.canvas.addEventListener("touchstart", function (e) {
+            e.preventDefault();
+            _this.startDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }, false);
+        this.canvas.addEventListener("touchend", function (e) {
+            e.preventDefault();
+            _this.endDrag();
+        }, false);
+        this.canvas.addEventListener("touchcancel", function (e) {
+            e.preventDefault();
+            _this.endDrag();
+        }, false);
+        this.canvas.addEventListener("touchmove", function (e) {
+            e.preventDefault();
+            _this.moveTerrainHandle(e.touches[0].clientX, e.touches[0].clientY);
+        }, false);
     };
     return Terrain;
 }());

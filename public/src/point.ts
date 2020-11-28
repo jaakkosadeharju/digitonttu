@@ -6,6 +6,8 @@ export class Point {
 
     x: number;
     y: number;
+    cp1: Point;
+    cp2: Point;
 
     // Euclidean distance between this and the argument point
     public distanceTo(point: Point) {
