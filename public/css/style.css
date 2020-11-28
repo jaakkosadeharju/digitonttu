@@ -157,10 +157,10 @@ button#start {
     padding: 0.6em;
     border-radius: 6px;
     box-shadow: 2pt 2pt 5pt #0000007a;
-    width: 10em;
-    font-size: 15pt;
     margin: 0 auto;
     display: block;
+    font-size: 2.4em;
+    margin-top: 1em;
 }
 
 button#start:active,
@@ -204,4 +204,3 @@ body.started button#dive {
     width: 80%;
     left: 10%;
 }
-

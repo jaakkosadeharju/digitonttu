@@ -114,6 +114,7 @@ const refresh = () => {
 
         if (score > highscore) {
             // set new high score
+            highscore = score;
             document.getElementById('high-score').innerText = score.toString();
             localStorage.setItem('highscore', JSON.stringify(score));
         }

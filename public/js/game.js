@@ -86,6 +86,7 @@ var refresh = function () {
         document.getElementsByTagName('body')[0].classList.remove('started');
         document.getElementById('result').innerText = score.toString();
         if (score > highscore) {
+            highscore = score;
             document.getElementById('high-score').innerText = score.toString();
             localStorage.setItem('highscore', JSON.stringify(score));
         }
