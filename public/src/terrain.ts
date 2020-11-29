@@ -5,11 +5,11 @@ export class Terrain {
     constructor(canvas: HTMLCanvasElement, areaDimensions: Dimensions) {
         this.areaDimensions = areaDimensions;
         this.canvas = canvas;
-
         this.points = [
             new Point(areaDimensions.width - areaDimensions.width * (1 / 4), this.maxVerticalHeight()),
             new Point(areaDimensions.width - areaDimensions.width * (3 / 4), this.minVerticalHeight())
         ];
+        this.draggingHandles = {};
 
         this.addMouseEventListeners();
     }
@@ -21,7 +21,7 @@ export class Terrain {
     canvas: HTMLCanvasElement;
     points: Point[];
     areaDimensions: Dimensions;
-    draggingHandle: Point;
+    draggingHandles: any;
 
     draw() {
         let ctx = this.canvas.getContext("2d");
@@ -153,7 +153,11 @@ export class Terrain {
 
 
     // terrain mouse event handlers
-    startDrag = (x: number, y: number) => {
+    startDrag = (x: number, y: number, identifier: number = 0) => {
+        if (this.draggingHandles[identifier]) {
+            return;
+        }
+
         const mouseCanvasPosition = new Point(
             (x - this.canvas.offsetLeft) / this.canvas.offsetWidth * this.canvas.width,
             (y - this.canvas.offsetTop) / this.canvas.offsetHeight * this.canvas.height
@@ -163,24 +167,30 @@ export class Terrain {
             return (p.distanceTo(mouseCanvasPosition) < closest.distanceTo(mouseCanvasPosition) ? p : closest);
         }, new Point(Infinity, Infinity));
 
-        if (closestPoint.distanceTo(mouseCanvasPosition) < this.handleRadius) {
-            this.draggingHandle = closestPoint;
+        if (closestPoint.distanceTo(mouseCanvasPosition) < this.handleRadius * 2) {
+            // console.log('START', identifier);
+            
+            this.draggingHandles[identifier] = closestPoint;
         }
     }
-    moveTerrainHandle = (x: number, y: number) => {
-        const mouseCanvasPosition = new Point(
-            (x - this.canvas.offsetLeft) / this.canvas.offsetWidth * this.canvas.width,
-            (y - this.canvas.offsetTop) / this.canvas.offsetHeight * this.canvas.height
-        )
+    moveTerrainHandle = (x: number, y: number, identifier: number = 0) => {
+        if (this.draggingHandles[identifier]) {
+            const mouseCanvasPosition = new Point(
+                (x - this.canvas.offsetLeft) / this.canvas.offsetWidth * this.canvas.width,
+                (y - this.canvas.offsetTop) / this.canvas.offsetHeight * this.canvas.height
+            )
 
-        if (this.draggingHandle) {
-            this.draggingHandle.x = mouseCanvasPosition.x;
-            this.draggingHandle.y = Math.max(Math.min(mouseCanvasPosition.y, this.minVerticalHeight()), this.maxVerticalHeight());
+            // console.log('MOVE', identifier, x, y);
+            
+            this.draggingHandles[identifier].x = mouseCanvasPosition.x;
+            this.draggingHandles[identifier].y = Math.max(Math.min(mouseCanvasPosition.y, this.minVerticalHeight()), this.maxVerticalHeight());
         }
     }
-    endDrag = () => {
-        if (this.draggingHandle) {
-            this.draggingHandle = null;
+    endDrag = (identifier: number = 0) => {
+        if (this.draggingHandles[identifier] !== undefined) {
+            // console.log('END', identifier);
+            
+            this.draggingHandles[identifier] = undefined;
         }
     }
 
@@ -200,19 +210,36 @@ export class Terrain {
         }, false);
         this.canvas.addEventListener("touchstart", e => {
             e.preventDefault();
-            this.startDrag(e.touches[0].clientX, e.touches[0].clientY)
+
+            for (let i = 0; i < e.touches.length; i++) {
+                const touch = e.targetTouches.item(i);
+                if (touch) {
+                    this.startDrag(touch.clientX, touch.clientY, touch.identifier);
+                }
+            }
         }, false);
         this.canvas.addEventListener("touchend", e => {
             e.preventDefault();
-            this.endDrag()
+
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches.item(i);
+                this.endDrag(touch.identifier);
+            }
         }, false);
         this.canvas.addEventListener("touchcancel", e => {
             e.preventDefault();
-            this.endDrag()
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches.item(i);
+                this.endDrag(touch.identifier);
+            }
         }, false);
         this.canvas.addEventListener("touchmove", e => {
             e.preventDefault();
-            this.moveTerrainHandle(e.touches[0].clientX, e.touches[0].clientY)
+
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches.item(i);
+                this.moveTerrainHandle(touch.clientX, touch.clientY, touch.identifier);
+            }
         }, false);
     }
 }

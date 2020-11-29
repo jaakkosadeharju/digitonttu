@@ -13,25 +13,31 @@ var Terrain = (function () {
         this.handleStrokeWidth = 3;
         this.maxVerticalHeight = function () { return _this.areaDimensions.height * (14 / 20); };
         this.minVerticalHeight = function () { return _this.areaDimensions.height * (17 / 20); };
-        this.startDrag = function (x, y) {
+        this.startDrag = function (x, y, identifier) {
+            if (identifier === void 0) { identifier = 0; }
+            if (_this.draggingHandles[identifier]) {
+                return;
+            }
             var mouseCanvasPosition = new Point((x - _this.canvas.offsetLeft) / _this.canvas.offsetWidth * _this.canvas.width, (y - _this.canvas.offsetTop) / _this.canvas.offsetHeight * _this.canvas.height);
             var closestPoint = _this.points.reduce(function (closest, p) {
                 return (p.distanceTo(mouseCanvasPosition) < closest.distanceTo(mouseCanvasPosition) ? p : closest);
             }, new Point(Infinity, Infinity));
-            if (closestPoint.distanceTo(mouseCanvasPosition) < _this.handleRadius) {
-                _this.draggingHandle = closestPoint;
+            if (closestPoint.distanceTo(mouseCanvasPosition) < _this.handleRadius * 2) {
+                _this.draggingHandles[identifier] = closestPoint;
             }
         };
-        this.moveTerrainHandle = function (x, y) {
-            var mouseCanvasPosition = new Point((x - _this.canvas.offsetLeft) / _this.canvas.offsetWidth * _this.canvas.width, (y - _this.canvas.offsetTop) / _this.canvas.offsetHeight * _this.canvas.height);
-            if (_this.draggingHandle) {
-                _this.draggingHandle.x = mouseCanvasPosition.x;
-                _this.draggingHandle.y = Math.max(Math.min(mouseCanvasPosition.y, _this.minVerticalHeight()), _this.maxVerticalHeight());
+        this.moveTerrainHandle = function (x, y, identifier) {
+            if (identifier === void 0) { identifier = 0; }
+            if (_this.draggingHandles[identifier]) {
+                var mouseCanvasPosition = new Point((x - _this.canvas.offsetLeft) / _this.canvas.offsetWidth * _this.canvas.width, (y - _this.canvas.offsetTop) / _this.canvas.offsetHeight * _this.canvas.height);
+                _this.draggingHandles[identifier].x = mouseCanvasPosition.x;
+                _this.draggingHandles[identifier].y = Math.max(Math.min(mouseCanvasPosition.y, _this.minVerticalHeight()), _this.maxVerticalHeight());
             }
         };
-        this.endDrag = function () {
-            if (_this.draggingHandle) {
-                _this.draggingHandle = null;
+        this.endDrag = function (identifier) {
+            if (identifier === void 0) { identifier = 0; }
+            if (_this.draggingHandles[identifier] !== undefined) {
+                _this.draggingHandles[identifier] = undefined;
             }
         };
         this.areaDimensions = areaDimensions;
@@ -40,6 +46,7 @@ var Terrain = (function () {
             new Point(areaDimensions.width - areaDimensions.width * (1 / 4), this.maxVerticalHeight()),
             new Point(areaDimensions.width - areaDimensions.width * (3 / 4), this.minVerticalHeight())
         ];
+        this.draggingHandles = {};
         this.addMouseEventListeners();
     }
     Terrain.prototype.draw = function () {
@@ -161,19 +168,33 @@ var Terrain = (function () {
         }, false);
         this.canvas.addEventListener("touchstart", function (e) {
             e.preventDefault();
-            _this.startDrag(e.touches[0].clientX, e.touches[0].clientY);
+            for (var i = 0; i < e.touches.length; i++) {
+                var touch = e.targetTouches.item(i);
+                if (touch) {
+                    _this.startDrag(touch.clientX, touch.clientY, touch.identifier);
+                }
+            }
         }, false);
         this.canvas.addEventListener("touchend", function (e) {
             e.preventDefault();
-            _this.endDrag();
+            for (var i = 0; i < e.changedTouches.length; i++) {
+                var touch = e.changedTouches.item(i);
+                _this.endDrag(touch.identifier);
+            }
         }, false);
         this.canvas.addEventListener("touchcancel", function (e) {
             e.preventDefault();
-            _this.endDrag();
+            for (var i = 0; i < e.changedTouches.length; i++) {
+                var touch = e.changedTouches.item(i);
+                _this.endDrag(touch.identifier);
+            }
         }, false);
         this.canvas.addEventListener("touchmove", function (e) {
             e.preventDefault();
-            _this.moveTerrainHandle(e.touches[0].clientX, e.touches[0].clientY);
+            for (var i = 0; i < e.changedTouches.length; i++) {
+                var touch = e.changedTouches.item(i);
+                _this.moveTerrainHandle(touch.clientX, touch.clientY, touch.identifier);
+            }
         }, false);
     };
     return Terrain;
