@@ -77,7 +77,6 @@ var Player = (function () {
         this.ctx = canvas.getContext("2d");
         this.terrain = terrain;
         this.position = startingPosition;
-        this.t = new Date();
         this.angle = 0;
         this.velocity = new Point(10, 10);
         this.positionHistory = [];
@@ -120,7 +119,7 @@ var Player = (function () {
             this.drawImageCenter(player, this.position.x, this.position.y, 150, 250, 1 / 5, this.angle);
         }
         collectedPresents.forEach(function (present, i) {
-            var presentSlot = _this.positionHistory[_this.positionHistory.length - (i + 1) * 4];
+            var presentSlot = _this.positionHistory[_this.positionHistory.length - (i + 1) * 10];
             present.position.x = presentSlot.x - present.width / 2;
             present.position.y = presentSlot.y - present.height / 2;
         });

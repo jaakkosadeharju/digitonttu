@@ -42,10 +42,7 @@ const drawSky = (ctx: CanvasRenderingContext2D) => {
     ctx.fillRect(0, 0, areaWidth, areaHeight);
 }
 
-const draw = () => {
-    drawSky(ctx);
-    terrain.draw();
-
+const calculateFrame = () => {
     // Calculate time
     let t0 = time;
     let t1 = new Date();
@@ -56,6 +53,13 @@ const draw = () => {
     }
 
     player.calculateFrame(dt);
+
+    time = t1;
+}
+
+const draw = () => {
+    drawSky(ctx);
+    terrain.draw();
     player.draw(presents.filter(p => p.collected));
     presents.forEach((p, i) => {
         p.draw()
@@ -66,12 +70,10 @@ const draw = () => {
     ctx.textAlign = "right";
     ctx.fillText(`${presents.length - 1}`, areaWidth - 40, 60);
 
-    // Time
+    // Clock
     if (startTime) {
-        clock.draw(gameDuration * 1000 - (t1.getTime() - startTime.getTime()));
+        clock.draw(gameDuration * 1000 - (time.getTime() - startTime.getTime()));
     }
-
-    time = t1;
 }
 
 const initGame = () => {
@@ -86,6 +88,15 @@ const startGame = () => {
     initGame();
     startTime = new Date();
     time = startTime;
+
+    let interval = setInterval(() => {
+        if (startTime.getTime() > (new Date()).getTime() - gameDuration * 1000) {
+            calculateFrame();
+        }
+        else {
+            clearInterval(interval);
+        }
+    }, 5);
 }
 
 const refresh = () => {

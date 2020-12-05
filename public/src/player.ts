@@ -3,21 +3,7 @@ import { Present } from "./present.js";
 import { Terrain } from "./terrain.js";
 
 export class Player {
-    constructor(canvas: HTMLCanvasElement, terrain: Terrain, startingPosition: Point = new Point(100, 100)) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext("2d");
-        this.terrain = terrain;
-        this.position = startingPosition;
-        this.t = new Date();
-        this.angle = 0;
-        this.velocity = new Point(10, 10);
-        this.positionHistory = [];
-        this.atGround = false;
-        this.diving = false;
-        this.divePressed = false;
-
-        this.addEventListeners();
-    }
+    lastCalcTime: Date;
     atGround: boolean;
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
@@ -31,10 +17,24 @@ export class Player {
     gravity = 9.81 * this.gravityScale;
     diving: boolean;
     divingWeight = 3;
-    t: Date;
     positionHistory: Point[];
     friction = 0.9;
     divePressed: boolean;
+    
+    constructor(canvas: HTMLCanvasElement, terrain: Terrain, startingPosition: Point = new Point(100, 100)) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext("2d");
+        this.terrain = terrain;
+        this.position = startingPosition;
+        this.angle = 0;
+        this.velocity = new Point(10, 10);
+        this.positionHistory = [];
+        this.atGround = false;
+        this.diving = false;
+        this.divePressed = false;
+        
+        this.addEventListeners();
+    }
 
     ski = () => ({
         back: new Point(
@@ -165,7 +165,7 @@ export class Player {
         }
 
         collectedPresents.forEach((present, i) => {
-            let presentSlot = this.positionHistory[this.positionHistory.length - (i + 1) * 4];
+            let presentSlot = this.positionHistory[this.positionHistory.length - (i + 1) * 10];
             present.position.x = presentSlot.x - present.width / 2;
             present.position.y = presentSlot.y - present.height / 2;
         });

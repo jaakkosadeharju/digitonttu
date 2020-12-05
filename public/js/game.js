@@ -33,9 +33,7 @@ var drawSky = function (ctx) {
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, areaWidth, areaHeight);
 };
-var draw = function () {
-    drawSky(ctx);
-    terrain.draw();
+var calculateFrame = function () {
     var t0 = time;
     var t1 = new Date();
     var dt = (t1.getTime() - t0.getTime()) / 1000;
@@ -43,6 +41,11 @@ var draw = function () {
         dt = 10;
     }
     player.calculateFrame(dt);
+    time = t1;
+};
+var draw = function () {
+    drawSky(ctx);
+    terrain.draw();
     player.draw(presents.filter(function (p) { return p.collected; }));
     presents.forEach(function (p, i) {
         p.draw();
@@ -51,9 +54,8 @@ var draw = function () {
     ctx.textAlign = "right";
     ctx.fillText("" + (presents.length - 1), areaWidth - 40, 60);
     if (startTime) {
-        clock.draw(gameDuration * 1000 - (t1.getTime() - startTime.getTime()));
+        clock.draw(gameDuration * 1000 - (time.getTime() - startTime.getTime()));
     }
-    time = t1;
 };
 var initGame = function () {
     terrain = new Terrain(canvas, new Dimensions(areaWidth, areaHeight));
@@ -66,6 +68,14 @@ var startGame = function () {
     initGame();
     startTime = new Date();
     time = startTime;
+    var interval = setInterval(function () {
+        if (startTime.getTime() > (new Date()).getTime() - gameDuration * 1000) {
+            calculateFrame();
+        }
+        else {
+            clearInterval(interval);
+        }
+    }, 5);
 };
 var refresh = function () {
     ctx.clearRect(0, 0, areaWidth, areaHeight);
