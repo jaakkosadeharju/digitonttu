@@ -103,11 +103,9 @@ const refresh = () => {
     ctx.clearRect(0, 0, areaWidth, areaHeight);
 
     const p = presents[presents.length - 1];
+    const playerSize = player.skiWidth;
 
-    if (player.position.x > p.position.x - p.width / 2
-        && player.position.x < p.position.x + p.width * (3 / 2)
-        && player.position.y > p.position.y - p.height / 2
-        && player.position.y < p.position.y + p.height * (3 / 2)) {
+    if (new Point(player.position.x, player.position.y - playerSize).distanceTo(p.position) < p.width * (3/2)) {
         // Pick the present
         p.collected = true;
         presents.push(new Present(canvas, terrain));

@@ -80,10 +80,8 @@ var startGame = function () {
 var refresh = function () {
     ctx.clearRect(0, 0, areaWidth, areaHeight);
     var p = presents[presents.length - 1];
-    if (player.position.x > p.position.x - p.width / 2
-        && player.position.x < p.position.x + p.width * (3 / 2)
-        && player.position.y > p.position.y - p.height / 2
-        && player.position.y < p.position.y + p.height * (3 / 2)) {
+    var playerSize = player.skiWidth;
+    if (new Point(player.position.x, player.position.y - playerSize).distanceTo(p.position) < p.width * (3 / 2)) {
         p.collected = true;
         presents.push(new Present(canvas, terrain));
     }

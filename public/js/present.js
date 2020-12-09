@@ -11,7 +11,7 @@ var Present = (function () {
     Present.prototype.draw = function () {
         var ctx = this.ctx;
         var present = document.getElementById("present");
-        ctx.drawImage(present, this.position.x, this.position.y, this.width, this.height);
+        ctx.drawImage(present, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
     };
     return Present;
 }());

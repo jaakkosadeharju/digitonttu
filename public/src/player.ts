@@ -87,7 +87,7 @@ export class Player {
             else if (terrainAngle > this.angle && this.velocity.x < 0) {
                 // redirect the player when moving leftward
                 this.velocity.y = speed * Math.sin(terrainAngle);
-                this.velocity.x = speed * Math.cos(-terrainAngle);
+                this.velocity.x = speed * -Math.cos(-terrainAngle);
             }
             else {
                 // console.log(this.angle, terrainAngle, Math.sin(this.angle), Math.sin(terrainAngle))
@@ -133,12 +133,13 @@ export class Player {
     }
 
     draw(collectedPresents: Present[]) {
+        // Angle vector
         // this.ctx.strokeStyle = "#fff";
         // this.ctx.lineWidth = 5;
         // this.ctx.beginPath();
         // const ski = this.ski();
         // this.ctx.moveTo(this.position.x, this.position.y);
-        // this.ctx.lineTo(this.position.x + this.velocity.x, this.position.y + this.velocity.y);
+        // this.ctx.lineTo(this.position.x + this.velocity.x/5, this.position.y + this.velocity.y/5);
         // this.ctx.stroke();
 
         //Heigt indicator
@@ -169,6 +170,13 @@ export class Player {
             present.position.x = presentSlot.x - present.width / 2;
             present.position.y = presentSlot.y - present.height / 2;
         });
+        
+        // // box
+        // this.ctx.beginPath();
+        // this.ctx.fillStyle = "white";
+        // // this.ctx.fillRect(this.position.x - this.skiWidth/2, this.position.y - this.skiWidth, this.skiWidth, this.skiWidth);
+        // this.ctx.arc(this.position.x, this.position.y - this.skiWidth, 10, 0, 2*Math.PI, false);
+        // this.ctx.fill();
     }
 
     private addEventListeners() {

@@ -15,16 +15,28 @@ export class Present {
     ctx: CanvasRenderingContext2D;
     position: Point;
     collected: boolean;
-    width = 29 * (3/2);
+    width = 29 * (3 / 2);
     height = 28 * (3 / 2);
 
     public draw() {
         const ctx = this.ctx;
 
         // ctx.fillStyle = '#f00';
-        // ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+        // ctx.beginPath();
+        // ctx.arc(
+        //     this.position.x,
+        //     this.position.y,
+        //     this.width * (3 / 2),
+        //     0,
+        //     Math.PI * 2,
+        //     false);
+        // ctx.fill();
 
         let present = <HTMLImageElement>document.getElementById("present");
-        ctx.drawImage(present, this.position.x, this.position.y, this.width, this.height);
+        ctx.drawImage(present,
+            this.position.x - this.width / 2,
+            this.position.y - this.height / 2,
+            this.width,
+            this.height);
     }
 }
