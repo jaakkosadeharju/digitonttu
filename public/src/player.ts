@@ -87,7 +87,7 @@ export class Player {
             else if (terrainAngle > this.angle && this.velocity.x < 0) {
                 // redirect the player when moving leftward
                 this.velocity.y = speed * Math.sin(terrainAngle);
-                this.velocity.x = speed * -Math.cos(-terrainAngle);
+                this.velocity.x = speed * Math.cos(-terrainAngle);
             }
             else {
                 // console.log(this.angle, terrainAngle, Math.sin(this.angle), Math.sin(terrainAngle))

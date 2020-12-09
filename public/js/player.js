@@ -41,7 +41,7 @@ var Player = (function () {
                 }
                 else if (terrainAngle > _this.angle && _this.velocity.x < 0) {
                     _this.velocity.y = speed * Math.sin(terrainAngle);
-                    _this.velocity.x = speed * -Math.cos(-terrainAngle);
+                    _this.velocity.x = speed * Math.cos(-terrainAngle);
                 }
                 else {
                 }
