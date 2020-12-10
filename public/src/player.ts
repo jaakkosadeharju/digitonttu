@@ -61,7 +61,7 @@ export class Player {
         // Update history
         this.positionHistory.push(new Point(this.position.x, this.position.y));
         this.positionHistory.splice(0, Math.max(0, this.positionHistory.length - 1000));
-        const lastPosition = this.positionHistory[this.positionHistory.length - 1];
+        const lastPosition = this.positionHistory[this.positionHistory.length - 5] || this.position;
 
         const [terrainHeight, terrainAngle] = this.terrain.getHeightAt(this.position.x);
 
@@ -111,7 +111,7 @@ export class Player {
         this.position.y += (dt * this.velocity.y);
 
         // Set the the angle of velocity as angle if not at ground
-        if (terrainHeight - 10 > this.position.y) {
+        if (terrainHeight - 10 > this.position.y && this.position.distanceTo(lastPosition) < this.terrain.areaDimensions.width / 2) {
             this.angle = Math.atan2(this.position.y - lastPosition.y, this.position.x - lastPosition.x);
         }
 
@@ -152,7 +152,7 @@ export class Player {
             this.ctx.stroke();
 
             this.ctx.textAlign = "left";
-            this.ctx.font = "30px Arial";
+            this.ctx.font = "30px Josefin Sans";
             this.ctx.fillText(`${Math.round((this.terrain.areaDimensions.height - this.position.y) / 50)} m`, 30, 50);
         }
 

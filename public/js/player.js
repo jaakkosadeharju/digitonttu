@@ -24,7 +24,7 @@ var Player = (function () {
         this.calculateFrame = function (dt) {
             _this.positionHistory.push(new Point(_this.position.x, _this.position.y));
             _this.positionHistory.splice(0, Math.max(0, _this.positionHistory.length - 1000));
-            var lastPosition = _this.positionHistory[_this.positionHistory.length - 1];
+            var lastPosition = _this.positionHistory[_this.positionHistory.length - 5] || _this.position;
             var _a = _this.terrain.getHeightAt(_this.position.x), terrainHeight = _a[0], terrainAngle = _a[1];
             if (terrainHeight + 1 <= _this.position.y) {
                 var speed = Math.sqrt(Math.pow(_this.velocity.x, 2) + Math.pow(_this.velocity.y, 2));
@@ -57,7 +57,7 @@ var Player = (function () {
             }
             _this.position.x += (dt * _this.velocity.x);
             _this.position.y += (dt * _this.velocity.y);
-            if (terrainHeight - 10 > _this.position.y) {
+            if (terrainHeight - 10 > _this.position.y && _this.position.distanceTo(lastPosition) < _this.terrain.areaDimensions.width / 2) {
                 _this.angle = Math.atan2(_this.position.y - lastPosition.y, _this.position.x - lastPosition.x);
             }
             _this.position.x = (_this.terrain.areaDimensions.width + _this.position.x) % _this.terrain.areaDimensions.width;
@@ -106,7 +106,7 @@ var Player = (function () {
             this.ctx.lineTo(this.position.x, 40);
             this.ctx.stroke();
             this.ctx.textAlign = "left";
-            this.ctx.font = "30px Arial";
+            this.ctx.font = "30px Josefin Sans";
             this.ctx.fillText(Math.round((this.terrain.areaDimensions.height - this.position.y) / 50) + " m", 30, 50);
         }
         var player;

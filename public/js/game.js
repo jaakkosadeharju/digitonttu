@@ -50,7 +50,7 @@ var draw = function () {
     presents.forEach(function (p, i) {
         p.draw();
     });
-    ctx.font = "50px Arial";
+    ctx.font = "50px Josefin Sans";
     ctx.textAlign = "right";
     ctx.fillText("" + (presents.length - 1), areaWidth - 40, 60);
     if (startTime) {
@@ -102,7 +102,9 @@ var refresh = function () {
 };
 initGame();
 setAreaDimensions();
-draw();
+setTimeout(function () {
+    draw();
+}, 100);
 window.onresize = setAreaDimensions;
 window.onscroll = setAreaDimensions;
 document.getElementById('start').onclick = function () {

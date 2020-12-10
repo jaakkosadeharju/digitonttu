@@ -66,7 +66,7 @@ const draw = () => {
     });
 
     // Score
-    ctx.font = "50px Arial";
+    ctx.font = "50px Josefin Sans";
     ctx.textAlign = "right";
     ctx.fillText(`${presents.length - 1}`, areaWidth - 40, 60);
 
@@ -134,7 +134,9 @@ initGame();
 setAreaDimensions();
 
 // Draw first frame to the background
-draw();
+setTimeout(() => {
+    draw();
+}, 100);
 
 window.onresize = setAreaDimensions;
 window.onscroll = setAreaDimensions;
