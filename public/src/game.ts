@@ -27,6 +27,9 @@ const setAreaDimensions = () => {
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
 
+    areaHeight = canvas.height;
+    areaWidth = canvas.width;
+
     terrain.areaDimensions.width = canvas.width;
     terrain.areaDimensions.height = canvas.height;
 

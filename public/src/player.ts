@@ -58,6 +58,9 @@ export class Player {
     }
 
     calculateFrame = (dt: number) => {
+        if (dt === 0) {
+            return;
+        }
         // Update history
         this.positionHistory.push(new Point(this.position.x, this.position.y));
         this.positionHistory.splice(0, Math.max(0, this.positionHistory.length - 1000));
@@ -67,12 +70,11 @@ export class Player {
 
         // player touches ground
         if (terrainHeight + 1 <= this.position.y) {
-            if (this.diving) {
-                this.velocity.x += (200/(dt*1000));
-            }
-
             let speed = Math.sqrt(Math.pow(this.velocity.x, 2) + Math.pow(this.velocity.y, 2));
 
+            if (this.diving) {
+                speed += (100 / (dt * 1000));
+            }
 
             this.velocity.x += Math.sin(terrainAngle) * (dt * this.gravity); // m/s
 
@@ -80,7 +82,7 @@ export class Player {
                 speed = Math.min(speed, 100); // kill the speed if angle too steep
             }
 
-            if (terrainAngle <= this.angle && this.velocity.x >= 0) {
+            if ((terrainAngle < this.angle || this.angle == 0) && this.velocity.x >= 0) {
                 // redirect the player when moving rightward
                 this.velocity.y = speed * Math.sin(terrainAngle);
                 this.velocity.x = speed * Math.cos(-terrainAngle);

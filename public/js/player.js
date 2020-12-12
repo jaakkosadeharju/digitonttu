@@ -22,20 +22,23 @@ var Player = (function () {
             return 0;
         };
         this.calculateFrame = function (dt) {
+            if (dt === 0) {
+                return;
+            }
             _this.positionHistory.push(new Point(_this.position.x, _this.position.y));
             _this.positionHistory.splice(0, Math.max(0, _this.positionHistory.length - 1000));
             var lastPosition = _this.positionHistory[_this.positionHistory.length - 5] || _this.position;
             var _a = _this.terrain.getHeightAt(_this.position.x), terrainHeight = _a[0], terrainAngle = _a[1];
             if (terrainHeight + 1 <= _this.position.y) {
-                if (_this.diving) {
-                    _this.velocity.x += (200 / (dt * 1000));
-                }
                 var speed = Math.sqrt(Math.pow(_this.velocity.x, 2) + Math.pow(_this.velocity.y, 2));
+                if (_this.diving) {
+                    speed += (100 / (dt * 1000));
+                }
                 _this.velocity.x += Math.sin(terrainAngle) * (dt * _this.gravity);
                 if (Math.abs(terrainAngle - _this.angle) > (Math.PI / 4)) {
                     speed = Math.min(speed, 100);
                 }
-                if (terrainAngle <= _this.angle && _this.velocity.x >= 0) {
+                if ((terrainAngle < _this.angle || _this.angle == 0) && _this.velocity.x >= 0) {
                     _this.velocity.y = speed * Math.sin(terrainAngle);
                     _this.velocity.x = speed * Math.cos(-terrainAngle);
                 }
