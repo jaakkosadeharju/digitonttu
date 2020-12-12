@@ -27,10 +27,10 @@ var Player = (function () {
             var lastPosition = _this.positionHistory[_this.positionHistory.length - 5] || _this.position;
             var _a = _this.terrain.getHeightAt(_this.position.x), terrainHeight = _a[0], terrainAngle = _a[1];
             if (terrainHeight + 1 <= _this.position.y) {
-                var speed = Math.sqrt(Math.pow(_this.velocity.x, 2) + Math.pow(_this.velocity.y, 2));
                 if (_this.diving) {
-                    speed += 40;
+                    _this.velocity.x += (200 / (dt * 1000));
                 }
+                var speed = Math.sqrt(Math.pow(_this.velocity.x, 2) + Math.pow(_this.velocity.y, 2));
                 _this.velocity.x += Math.sin(terrainAngle) * (dt * _this.gravity);
                 if (Math.abs(terrainAngle - _this.angle) > (Math.PI / 4)) {
                     speed = Math.min(speed, 100);

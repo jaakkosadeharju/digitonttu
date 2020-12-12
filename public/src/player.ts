@@ -67,11 +67,12 @@ export class Player {
 
         // player touches ground
         if (terrainHeight + 1 <= this.position.y) {
+            if (this.diving) {
+                this.velocity.x += (200/(dt*1000));
+            }
+
             let speed = Math.sqrt(Math.pow(this.velocity.x, 2) + Math.pow(this.velocity.y, 2));
 
-            if (this.diving) {
-                speed += 40;
-            }
 
             this.velocity.x += Math.sin(terrainAngle) * (dt * this.gravity); // m/s
 
