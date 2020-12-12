@@ -79,12 +79,12 @@ export class Player {
                 speed = Math.min(speed, 100); // kill the speed if angle too steep
             }
 
-            if (terrainAngle < this.angle && this.velocity.x >= 0) {
+            if (terrainAngle <= this.angle && this.velocity.x >= 0) {
                 // redirect the player when moving rightward
                 this.velocity.y = speed * Math.sin(terrainAngle);
                 this.velocity.x = speed * Math.cos(-terrainAngle);
             }
-            else if (terrainAngle > this.angle && this.velocity.x < 0) {
+            else if (terrainAngle >= this.angle && this.velocity.x < 0) {
                 // redirect the player when moving leftward
                 this.velocity.y = speed * Math.sin(terrainAngle);
                 this.velocity.x = speed * Math.cos(-terrainAngle);

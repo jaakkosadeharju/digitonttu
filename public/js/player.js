@@ -35,11 +35,11 @@ var Player = (function () {
                 if (Math.abs(terrainAngle - _this.angle) > (Math.PI / 4)) {
                     speed = Math.min(speed, 100);
                 }
-                if (terrainAngle < _this.angle && _this.velocity.x >= 0) {
+                if (terrainAngle <= _this.angle && _this.velocity.x >= 0) {
                     _this.velocity.y = speed * Math.sin(terrainAngle);
                     _this.velocity.x = speed * Math.cos(-terrainAngle);
                 }
-                else if (terrainAngle > _this.angle && _this.velocity.x < 0) {
+                else if (terrainAngle >= _this.angle && _this.velocity.x < 0) {
                     _this.velocity.y = speed * Math.sin(terrainAngle);
                     _this.velocity.x = speed * Math.cos(-terrainAngle);
                 }
