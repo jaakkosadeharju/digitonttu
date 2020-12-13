@@ -19,8 +19,6 @@ var time;
 var startTime;
 var clock;
 var highscore = JSON.parse(localStorage.getItem('highscore')) || 0;
-var mainTune;
-var gameTune;
 var sounds = new Sounds();
 var drawSky = function (ctx) {
     var bg = ctx.createLinearGradient(0, 0, 0, areaHeight);
@@ -65,6 +63,17 @@ var draw = function () {
         clock.draw(gameDuration * 1000 - (time.getTime() - startTime.getTime()));
     }
 };
+var updateSoundButton = function () {
+    var soundButton = document.getElementById('sound');
+    if (sounds.enabled) {
+        soundButton.innerHTML = "&#128266;";
+        soundButton.classList.remove("muted");
+    }
+    else {
+        soundButton.innerHTML = "&#128263;";
+        soundButton.classList.add("muted");
+    }
+};
 var initGame = function () {
     terrain = new Terrain(canvas, new Dimensions(areaWidth, areaHeight));
     clock = new Clock(ctx, terrain);
@@ -72,6 +81,7 @@ var initGame = function () {
     presents = [new Present(canvas, terrain)];
     time = new Date();
     document.getElementById('high-score').innerText = highscore.toString();
+    updateSoundButton();
 };
 var startGame = function () {
     initGame();
@@ -149,14 +159,7 @@ diveButton.addEventListener('touchcancel', function (e) {
 var soundButton = document.getElementById('sound');
 soundButton.addEventListener('click', function (e) {
     sounds.toggleMute();
-    if (sounds.enabled) {
-        soundButton.innerHTML = "&#128266;";
-        soundButton.classList.remove("muted");
-    }
-    else {
-        soundButton.innerHTML = "&#128263;";
-        soundButton.classList.add("muted");
-    }
+    updateSoundButton();
     e.preventDefault();
 }, false);
 //# sourceMappingURL=game.js.map

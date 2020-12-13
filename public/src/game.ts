@@ -23,8 +23,6 @@ let time: Date;
 let startTime: Date;
 let clock: Clock;
 let highscore: number = JSON.parse(localStorage.getItem('highscore')) || 0;
-let mainTune: HTMLAudioElement;
-let gameTune: HTMLAudioElement;
 let sounds: Sounds = new Sounds();
 
 
@@ -86,6 +84,18 @@ const draw = () => {
     }
 }
 
+const updateSoundButton = () => {
+    let soundButton = document.getElementById('sound');
+    if (sounds.enabled) {
+        soundButton.innerHTML = "&#128266;";
+        soundButton.classList.remove("muted");
+    }
+    else {
+        soundButton.innerHTML = "&#128263;";
+        soundButton.classList.add("muted");
+    }
+}
+
 const initGame = () => {
     terrain = new Terrain(canvas, new Dimensions(areaWidth, areaHeight));
     clock = new Clock(ctx, terrain);
@@ -93,6 +103,8 @@ const initGame = () => {
     presents = [new Present(canvas, terrain)];
     time = new Date();
     document.getElementById('high-score').innerText = highscore.toString();
+
+    updateSoundButton();
 }
 
 const startGame = () => {
@@ -196,13 +208,8 @@ diveButton.addEventListener('touchcancel', e => {
 const soundButton = document.getElementById('sound');
 soundButton.addEventListener('click', e => {
     sounds.toggleMute();
-    if (sounds.enabled) {
-        soundButton.innerHTML = "&#128266;";
-        soundButton.classList.remove("muted");
-    } else {
-        soundButton.innerHTML = "&#128263;";
-        soundButton.classList.add("muted");
-    }
+
+    updateSoundButton();
 
     e.preventDefault();
 }, false);

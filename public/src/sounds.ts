@@ -1,6 +1,6 @@
 export class Sounds {
     constructor() {
-        this.enabled = false;
+        this.enabled = JSON.parse(localStorage.getItem('soundsEnabled')) !== false;
     }
 
     enabled: boolean;
@@ -46,6 +46,8 @@ export class Sounds {
 
     toggleMute = () => {
         this.enabled = !this.enabled;
+
+        localStorage.setItem('soundsEnabled', this.enabled ? 'true' : 'false');
 
         if (this.mainTune) {
             this.mainTune.volume = this.enabled ? this.mainVolume : 0;

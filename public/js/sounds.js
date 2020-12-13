@@ -36,6 +36,7 @@ var Sounds = (function () {
         };
         this.toggleMute = function () {
             _this.enabled = !_this.enabled;
+            localStorage.setItem('soundsEnabled', _this.enabled ? 'true' : 'false');
             if (_this.mainTune) {
                 _this.mainTune.volume = _this.enabled ? _this.mainVolume : 0;
             }
@@ -43,7 +44,7 @@ var Sounds = (function () {
                 _this.gameTune.volume = _this.enabled ? _this.gameVolume : 0;
             }
         };
-        this.enabled = false;
+        this.enabled = JSON.parse(localStorage.getItem('soundsEnabled')) !== false;
     }
     return Sounds;
 }());
