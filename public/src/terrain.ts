@@ -5,10 +5,7 @@ export class Terrain {
     constructor(canvas: HTMLCanvasElement, areaDimensions: Dimensions) {
         this.areaDimensions = areaDimensions;
         this.canvas = canvas;
-        this.points = [
-            new Point(areaDimensions.width - areaDimensions.width * (1 / 4), this.maxVerticalHeight()),
-            new Point(areaDimensions.width - areaDimensions.width * (3 / 4), this.minVerticalHeight())
-        ];
+        this.resetPoints();
         this.draggingHandles = {};
 
         this.addMouseEventListeners();
@@ -193,6 +190,13 @@ export class Terrain {
             this.draggingHandles[identifier] = undefined;
         }
     }
+
+    resetPoints = () => {
+        this.points = [
+            new Point(this.areaDimensions.width - this.areaDimensions.width * (1 / 4), this.maxVerticalHeight()),
+            new Point(this.areaDimensions.width - this.areaDimensions.width * (3 / 4), this.minVerticalHeight())
+        ];
+    };
 
     private addMouseEventListeners() {
         // mouse events

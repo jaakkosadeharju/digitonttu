@@ -4,6 +4,7 @@ import { Player } from "./player.js";
 import { Point } from "./point.js";
 import { Present } from "./present.js";
 import { Terrain } from "./terrain.js";
+import { Sounds } from "./sounds.js"
 
 let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("game-area");
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
@@ -20,8 +21,21 @@ let player: Player;
 let presents: Present[];
 let time: Date;
 let startTime: Date;
-let clock: Clock = new Clock(ctx, new Point(areaWidth / 2, areaHeight / 2));
+let clock: Clock;
 let highscore: number = JSON.parse(localStorage.getItem('highscore')) || 0;
+let mainTune: HTMLAudioElement;
+let gameTune: HTMLAudioElement;
+let sounds: Sounds = new Sounds();
+
+
+const drawSky = (ctx: CanvasRenderingContext2D) => {
+    let bg = ctx.createLinearGradient(0, 0, 0, areaHeight);
+    bg.addColorStop(0, '#474');
+    bg.addColorStop(0.5, '#333');
+    bg.addColorStop(1, '#daa');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, areaWidth, areaHeight);
+}
 
 const setAreaDimensions = () => {
     canvas.height = window.innerHeight;
@@ -32,17 +46,10 @@ const setAreaDimensions = () => {
 
     terrain.areaDimensions.width = canvas.width;
     terrain.areaDimensions.height = canvas.height;
+    terrain.resetPoints();
 
     document.getElementsByTagName('body')[0].style.height = window.innerHeight + 'px';
-}
-
-const drawSky = (ctx: CanvasRenderingContext2D) => {
-    let bg = ctx.createLinearGradient(0, 0, 0, areaHeight);
-    bg.addColorStop(0, '#474');
-    bg.addColorStop(0.5, '#333');
-    bg.addColorStop(1, '#daa');
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, areaWidth, areaHeight);
+    drawSky(ctx);
 }
 
 const calculateFrame = () => {
@@ -81,6 +88,7 @@ const draw = () => {
 
 const initGame = () => {
     terrain = new Terrain(canvas, new Dimensions(areaWidth, areaHeight));
+    clock = new Clock(ctx, terrain);
     player = new Player(canvas, terrain, new Point(50, 600));
     presents = [new Present(canvas, terrain)];
     time = new Date();
@@ -100,6 +108,9 @@ const startGame = () => {
             clearInterval(interval);
         }
     }, 5);
+
+    // sounds.stopMainTune();
+    sounds.startGameTune();
 }
 
 const refresh = () => {
@@ -112,6 +123,8 @@ const refresh = () => {
         // Pick the present
         p.collected = true;
         presents.push(new Present(canvas, terrain));
+        
+        sounds.playCollectSound();
     }
 
     draw();
@@ -120,9 +133,13 @@ const refresh = () => {
         requestAnimationFrame(refresh);
     }
     else {
+        // Game ended
         const score = presents.length - 1;
         document.getElementsByTagName('body')[0].classList.remove('started');
         document.getElementById('result').innerText = score.toString();
+
+        sounds.stopGameTune();
+        // sounds.startMainTune();
 
         if (score > highscore) {
             // set new high score
@@ -172,5 +189,20 @@ diveButton.addEventListener('touchend', e => {
 diveButton.addEventListener('touchcancel', e => {
     player.hanldeDiveButtonRelease();
     diveButton.classList.remove('active')
+    e.preventDefault();
+}, false);
+
+
+const soundButton = document.getElementById('sound');
+soundButton.addEventListener('click', e => {
+    sounds.toggleMute();
+    if (sounds.enabled) {
+        soundButton.innerHTML = "&#128266;";
+        soundButton.classList.remove("muted");
+    } else {
+        soundButton.innerHTML = "&#128263;";
+        soundButton.classList.add("muted");
+    }
+
     e.preventDefault();
 }, false);

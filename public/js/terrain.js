@@ -40,12 +40,15 @@ var Terrain = (function () {
                 _this.draggingHandles[identifier] = undefined;
             }
         };
+        this.resetPoints = function () {
+            _this.points = [
+                new Point(_this.areaDimensions.width - _this.areaDimensions.width * (1 / 4), _this.maxVerticalHeight()),
+                new Point(_this.areaDimensions.width - _this.areaDimensions.width * (3 / 4), _this.minVerticalHeight())
+            ];
+        };
         this.areaDimensions = areaDimensions;
         this.canvas = canvas;
-        this.points = [
-            new Point(areaDimensions.width - areaDimensions.width * (1 / 4), this.maxVerticalHeight()),
-            new Point(areaDimensions.width - areaDimensions.width * (3 / 4), this.minVerticalHeight())
-        ];
+        this.resetPoints();
         this.draggingHandles = {};
         this.addMouseEventListeners();
     }

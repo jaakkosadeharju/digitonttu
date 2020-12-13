@@ -4,6 +4,7 @@ import { Player } from "./player.js";
 import { Point } from "./point.js";
 import { Present } from "./present.js";
 import { Terrain } from "./terrain.js";
+import { Sounds } from "./sounds.js";
 var canvas = document.getElementById("game-area");
 var ctx = canvas.getContext("2d");
 canvas.height = window.innerHeight;
@@ -16,17 +17,11 @@ var player;
 var presents;
 var time;
 var startTime;
-var clock = new Clock(ctx, new Point(areaWidth / 2, areaHeight / 2));
+var clock;
 var highscore = JSON.parse(localStorage.getItem('highscore')) || 0;
-var setAreaDimensions = function () {
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
-    areaHeight = canvas.height;
-    areaWidth = canvas.width;
-    terrain.areaDimensions.width = canvas.width;
-    terrain.areaDimensions.height = canvas.height;
-    document.getElementsByTagName('body')[0].style.height = window.innerHeight + 'px';
-};
+var mainTune;
+var gameTune;
+var sounds = new Sounds();
 var drawSky = function (ctx) {
     var bg = ctx.createLinearGradient(0, 0, 0, areaHeight);
     bg.addColorStop(0, '#474');
@@ -34,6 +29,17 @@ var drawSky = function (ctx) {
     bg.addColorStop(1, '#daa');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, areaWidth, areaHeight);
+};
+var setAreaDimensions = function () {
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    areaHeight = canvas.height;
+    areaWidth = canvas.width;
+    terrain.areaDimensions.width = canvas.width;
+    terrain.areaDimensions.height = canvas.height;
+    terrain.resetPoints();
+    document.getElementsByTagName('body')[0].style.height = window.innerHeight + 'px';
+    drawSky(ctx);
 };
 var calculateFrame = function () {
     var t0 = time;
@@ -61,6 +67,7 @@ var draw = function () {
 };
 var initGame = function () {
     terrain = new Terrain(canvas, new Dimensions(areaWidth, areaHeight));
+    clock = new Clock(ctx, terrain);
     player = new Player(canvas, terrain, new Point(50, 600));
     presents = [new Present(canvas, terrain)];
     time = new Date();
@@ -78,6 +85,7 @@ var startGame = function () {
             clearInterval(interval);
         }
     }, 5);
+    sounds.startGameTune();
 };
 var refresh = function () {
     ctx.clearRect(0, 0, areaWidth, areaHeight);
@@ -86,6 +94,7 @@ var refresh = function () {
     if (new Point(player.position.x, player.position.y - playerSize).distanceTo(p.position) < p.width * (3 / 2)) {
         p.collected = true;
         presents.push(new Present(canvas, terrain));
+        sounds.playCollectSound();
     }
     draw();
     if (startTime.getTime() > (new Date()).getTime() - gameDuration * 1000) {
@@ -95,6 +104,7 @@ var refresh = function () {
         var score = presents.length - 1;
         document.getElementsByTagName('body')[0].classList.remove('started');
         document.getElementById('result').innerText = score.toString();
+        sounds.stopGameTune();
         if (score > highscore) {
             highscore = score;
             document.getElementById('high-score').innerText = score.toString();
@@ -134,6 +144,19 @@ diveButton.addEventListener('touchend', function (e) {
 diveButton.addEventListener('touchcancel', function (e) {
     player.hanldeDiveButtonRelease();
     diveButton.classList.remove('active');
+    e.preventDefault();
+}, false);
+var soundButton = document.getElementById('sound');
+soundButton.addEventListener('click', function (e) {
+    sounds.toggleMute();
+    if (sounds.enabled) {
+        soundButton.innerHTML = "&#128266;";
+        soundButton.classList.remove("muted");
+    }
+    else {
+        soundButton.innerHTML = "&#128263;";
+        soundButton.classList.add("muted");
+    }
     e.preventDefault();
 }, false);
 //# sourceMappingURL=game.js.map
