@@ -78,6 +78,12 @@ const draw = () => {
     ctx.textAlign = "right";
     ctx.fillText(`${presents.length - 1}`, areaWidth - 40, 60);
 
+    // Score
+    ctx.font = "14px Josefin Sans";
+    ctx.textAlign = "right";
+    ctx.fillText(`Pisin hyppy ${player.longestJump()} m`, areaWidth - 40, 100);
+    ctx.fillText(`Maksimikorkeus ${player.highestPoint()} m`, areaWidth - 40, 120);
+
     // Clock
     if (startTime) {
         clock.draw(gameDuration * 1000 - (time.getTime() - startTime.getTime()));
@@ -131,7 +137,7 @@ const refresh = () => {
     const p = presents[presents.length - 1];
     const playerSize = player.skiWidth;
 
-    if (new Point(player.position.x, player.position.y - playerSize).distanceTo(p.position) < p.width * (3/2)) {
+    if (new Point(player.onScreenX(), player.position.y - playerSize).distanceTo(p.position) < p.width * (3/2)) {
         // Pick the present
         p.collected = true;
         presents.push(new Present(canvas, terrain));

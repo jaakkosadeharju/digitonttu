@@ -20,7 +20,15 @@ export class Player {
     positionHistory: Point[];
     friction = 0.9;
     divePressed: boolean;
-    
+    onGround: boolean;
+    jumpStartPos: number;
+    jumps: number[];
+    minY: number;
+
+    onScreenX = () => ((this.terrain.areaDimensions.width + this.position.x) % this.terrain.areaDimensions.width);
+    longestJump = () => Math.round((this.jumps.sort((a, b) => b - a)[0]) || 0);
+    highestPoint = () => Math.round((this.terrain.areaDimensions.height - this.minY) / 50);
+
     constructor(canvas: HTMLCanvasElement, terrain: Terrain, startingPosition: Point = new Point(100, 100)) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
@@ -32,7 +40,10 @@ export class Player {
         this.atGround = false;
         this.diving = false;
         this.divePressed = false;
-        
+        this.onGround = false;
+        this.jumps = [];
+        this.minY = this.terrain.areaDimensions.height;
+
         this.addEventListeners();
     }
 
@@ -65,11 +76,17 @@ export class Player {
         this.positionHistory.push(new Point(this.position.x, this.position.y));
         this.positionHistory.splice(0, Math.max(0, this.positionHistory.length - 1000));
         const lastPosition = this.positionHistory[this.positionHistory.length - 5] || this.position;
-
-        const [terrainHeight, terrainAngle] = this.terrain.getHeightAt(this.position.x);
+        const [terrainHeight, terrainAngle] = this.terrain.getHeightAt(this.onScreenX());
 
         // player touches ground
         if (terrainHeight + 1 <= this.position.y) {
+            // Store jump length
+            if (this.jumpStartPos && !this.onGround && this.position.x - this.jumpStartPos > 500) {
+                this.jumps.push((this.position.x - this.jumpStartPos) / 50);
+            }
+
+            this.onGround = true;
+
             let speed = Math.sqrt(Math.pow(this.velocity.x, 2) + Math.pow(this.velocity.y, 2));
 
             if (this.diving) {
@@ -97,11 +114,17 @@ export class Player {
                 // debugger;
             }
 
-
             this.angle = terrainAngle;
             this.position.y = Math.min(terrainHeight, this.position.y);
             this.atGround = true;
         } else {
+            if (this.onGround) {
+                // store jump start
+                this.jumpStartPos = this.position.x;
+            }
+
+            this.onGround = false;
+
             this.velocity.y += (dt * this.gravity * (this.diving ? this.divingWeight : 1)); // m/s
 
             if (terrainHeight - 5 <= this.position.y) {
@@ -113,13 +136,15 @@ export class Player {
         this.position.x += (dt * this.velocity.x);
         this.position.y += (dt * this.velocity.y);
 
+        // Store max height
+        if (this.position.y < this.minY) {
+            this.minY = this.position.y;
+        }
+
         // Set the the angle of velocity as angle if not at ground
         if (terrainHeight - 10 > this.position.y && this.position.distanceTo(lastPosition) < this.terrain.areaDimensions.width / 2) {
             this.angle = Math.atan2(this.position.y - lastPosition.y, this.position.x - lastPosition.x);
         }
-
-        // make player warp to the other side of the screen if going outside of the area
-        this.position.x = (this.terrain.areaDimensions.width + this.position.x) % this.terrain.areaDimensions.width;
     }
 
     drawImage(image: HTMLImageElement, x: number, y: number, scale: number, rotation: number) {
@@ -141,17 +166,18 @@ export class Player {
         // this.ctx.lineWidth = 5;
         // this.ctx.beginPath();
         // const ski = this.ski();
-        // this.ctx.moveTo(this.position.x, this.position.y);
-        // this.ctx.lineTo(this.position.x + this.velocity.x/5, this.position.y + this.velocity.y/5);
+        // this.ctx.moveTo(this.onScreenX(), this.position.y);
+        // this.ctx.lineTo(this.onScreenX() + this.velocity.x/5, this.position.y + this.velocity.y/5);
         // this.ctx.stroke();
+
 
         //Heigt indicator
         if (this.position.y < - this.playerHeight) {
             this.ctx.strokeStyle = "#fff";
             this.ctx.lineWidth = 5;
             this.ctx.beginPath();
-            this.ctx.moveTo(this.position.x, 0);
-            this.ctx.lineTo(this.position.x, 40);
+            this.ctx.moveTo(this.onScreenX(), 0);
+            this.ctx.lineTo(this.onScreenX(), 40);
             this.ctx.stroke();
 
             this.ctx.textAlign = "left";
@@ -162,10 +188,10 @@ export class Player {
         let player: HTMLImageElement;
         if (this.velocity.x >= 0) {
             player = <HTMLImageElement>document.getElementById("player");
-            this.drawImageCenter(player, this.position.x, this.position.y, 150, 250, 1 / 5, this.angle);
+            this.drawImageCenter(player, this.onScreenX(), this.position.y, 150, 250, 1 / 5, this.angle);
         } else {
             player = <HTMLImageElement>document.getElementById("player-reversed");
-            this.drawImageCenter(player, this.position.x, this.position.y, 150, 250, 1 / 5, this.angle);
+            this.drawImageCenter(player, this.onScreenX(), this.position.y, 150, 250, 1 / 5, this.angle);
         }
 
         collectedPresents.forEach((present, i) => {
@@ -173,12 +199,12 @@ export class Player {
             present.position.x = presentSlot.x - present.width / 2;
             present.position.y = presentSlot.y - present.height / 2;
         });
-        
+
         // // box
         // this.ctx.beginPath();
         // this.ctx.fillStyle = "white";
-        // // this.ctx.fillRect(this.position.x - this.skiWidth/2, this.position.y - this.skiWidth, this.skiWidth, this.skiWidth);
-        // this.ctx.arc(this.position.x, this.position.y - this.skiWidth, 10, 0, 2*Math.PI, false);
+        // // this.ctx.fillRect(this.onScreenX() - this.skiWidth/2, this.position.y - this.skiWidth, this.skiWidth, this.skiWidth);
+        // this.ctx.arc(this.onScreenX(), this.position.y - this.skiWidth, 10, 0, 2*Math.PI, false);
         // this.ctx.fill();
     }
 

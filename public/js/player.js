@@ -9,6 +9,9 @@ var Player = (function () {
         this.gravity = 9.81 * this.gravityScale;
         this.divingWeight = 3;
         this.friction = 0.9;
+        this.onScreenX = function () { return ((_this.terrain.areaDimensions.width + _this.position.x) % _this.terrain.areaDimensions.width); };
+        this.longestJump = function () { return Math.round((_this.jumps.sort(function (a, b) { return b - a; })[0]) || 0); };
+        this.highestPoint = function () { return Math.round((_this.terrain.areaDimensions.height - _this.minY) / 50); };
         this.ski = function () { return ({
             back: new Point(_this.position.x - (_this.skiWidth / 2) * Math.cos(_this.angle), _this.position.y - (_this.skiWidth / 2) * Math.sin(_this.angle)),
             front: new Point(_this.position.x + (_this.skiWidth / 2) * Math.cos(_this.angle), _this.position.y + (_this.skiWidth / 2) * Math.sin(_this.angle))
@@ -28,8 +31,12 @@ var Player = (function () {
             _this.positionHistory.push(new Point(_this.position.x, _this.position.y));
             _this.positionHistory.splice(0, Math.max(0, _this.positionHistory.length - 1000));
             var lastPosition = _this.positionHistory[_this.positionHistory.length - 5] || _this.position;
-            var _a = _this.terrain.getHeightAt(_this.position.x), terrainHeight = _a[0], terrainAngle = _a[1];
+            var _a = _this.terrain.getHeightAt(_this.onScreenX()), terrainHeight = _a[0], terrainAngle = _a[1];
             if (terrainHeight + 1 <= _this.position.y) {
+                if (_this.jumpStartPos && !_this.onGround && _this.position.x - _this.jumpStartPos > 500) {
+                    _this.jumps.push((_this.position.x - _this.jumpStartPos) / 50);
+                }
+                _this.onGround = true;
                 var speed = Math.sqrt(Math.pow(_this.velocity.x, 2) + Math.pow(_this.velocity.y, 2));
                 if (_this.diving) {
                     speed += (100 / (dt * 1000));
@@ -53,6 +60,10 @@ var Player = (function () {
                 _this.atGround = true;
             }
             else {
+                if (_this.onGround) {
+                    _this.jumpStartPos = _this.position.x;
+                }
+                _this.onGround = false;
                 _this.velocity.y += (dt * _this.gravity * (_this.diving ? _this.divingWeight : 1));
                 if (terrainHeight - 5 <= _this.position.y) {
                     _this.atGround = false;
@@ -60,10 +71,12 @@ var Player = (function () {
             }
             _this.position.x += (dt * _this.velocity.x);
             _this.position.y += (dt * _this.velocity.y);
+            if (_this.position.y < _this.minY) {
+                _this.minY = _this.position.y;
+            }
             if (terrainHeight - 10 > _this.position.y && _this.position.distanceTo(lastPosition) < _this.terrain.areaDimensions.width / 2) {
                 _this.angle = Math.atan2(_this.position.y - lastPosition.y, _this.position.x - lastPosition.x);
             }
-            _this.position.x = (_this.terrain.areaDimensions.width + _this.position.x) % _this.terrain.areaDimensions.width;
         };
         this.handleDiveButtonPress = function () {
             _this.divePressed = true;
@@ -86,6 +99,9 @@ var Player = (function () {
         this.atGround = false;
         this.diving = false;
         this.divePressed = false;
+        this.onGround = false;
+        this.jumps = [];
+        this.minY = this.terrain.areaDimensions.height;
         this.addEventListeners();
     }
     Player.prototype.drawImage = function (image, x, y, scale, rotation) {
@@ -105,8 +121,8 @@ var Player = (function () {
             this.ctx.strokeStyle = "#fff";
             this.ctx.lineWidth = 5;
             this.ctx.beginPath();
-            this.ctx.moveTo(this.position.x, 0);
-            this.ctx.lineTo(this.position.x, 40);
+            this.ctx.moveTo(this.onScreenX(), 0);
+            this.ctx.lineTo(this.onScreenX(), 40);
             this.ctx.stroke();
             this.ctx.textAlign = "left";
             this.ctx.font = "30px Josefin Sans";
@@ -115,11 +131,11 @@ var Player = (function () {
         var player;
         if (this.velocity.x >= 0) {
             player = document.getElementById("player");
-            this.drawImageCenter(player, this.position.x, this.position.y, 150, 250, 1 / 5, this.angle);
+            this.drawImageCenter(player, this.onScreenX(), this.position.y, 150, 250, 1 / 5, this.angle);
         }
         else {
             player = document.getElementById("player-reversed");
-            this.drawImageCenter(player, this.position.x, this.position.y, 150, 250, 1 / 5, this.angle);
+            this.drawImageCenter(player, this.onScreenX(), this.position.y, 150, 250, 1 / 5, this.angle);
         }
         collectedPresents.forEach(function (present, i) {
             var presentSlot = _this.positionHistory[_this.positionHistory.length - (i + 1) * 10];
