@@ -24,10 +24,12 @@ export class Player {
     jumpStartPos: number;
     jumps: number[];
     minY: number;
+    maxSpeed: number;
 
     onScreenX = () => ((this.terrain.areaDimensions.width + this.position.x) % this.terrain.areaDimensions.width);
     longestJump = () => Math.round((this.jumps.sort((a, b) => b - a)[0]) || 0);
     highestPoint = () => Math.round((this.terrain.areaDimensions.height - this.minY) / 50);
+    topSpeed = () => Math.round(this.maxSpeed / 50 * 3.6);
 
     constructor(canvas: HTMLCanvasElement, terrain: Terrain, startingPosition: Point = new Point(100, 100)) {
         this.canvas = canvas;
@@ -43,6 +45,7 @@ export class Player {
         this.onGround = false;
         this.jumps = [];
         this.minY = this.terrain.areaDimensions.height;
+        this.maxSpeed = 0;
 
         this.addEventListeners();
     }
@@ -140,6 +143,8 @@ export class Player {
         if (this.position.y < this.minY) {
             this.minY = this.position.y;
         }
+
+        this.maxSpeed = Math.max(this.maxSpeed, Math.sqrt(Math.pow(this.velocity.x, 2) + Math.pow(this.velocity.y, 2)));
 
         // Set the the angle of velocity as angle if not at ground
         if (terrainHeight - 10 > this.position.y && this.position.distanceTo(lastPosition) < this.terrain.areaDimensions.width / 2) {

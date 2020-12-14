@@ -12,6 +12,7 @@ var Player = (function () {
         this.onScreenX = function () { return ((_this.terrain.areaDimensions.width + _this.position.x) % _this.terrain.areaDimensions.width); };
         this.longestJump = function () { return Math.round((_this.jumps.sort(function (a, b) { return b - a; })[0]) || 0); };
         this.highestPoint = function () { return Math.round((_this.terrain.areaDimensions.height - _this.minY) / 50); };
+        this.topSpeed = function () { return Math.round(_this.maxSpeed / 50 * 3.6); };
         this.ski = function () { return ({
             back: new Point(_this.position.x - (_this.skiWidth / 2) * Math.cos(_this.angle), _this.position.y - (_this.skiWidth / 2) * Math.sin(_this.angle)),
             front: new Point(_this.position.x + (_this.skiWidth / 2) * Math.cos(_this.angle), _this.position.y + (_this.skiWidth / 2) * Math.sin(_this.angle))
@@ -74,6 +75,7 @@ var Player = (function () {
             if (_this.position.y < _this.minY) {
                 _this.minY = _this.position.y;
             }
+            _this.maxSpeed = Math.max(_this.maxSpeed, Math.sqrt(Math.pow(_this.velocity.x, 2) + Math.pow(_this.velocity.y, 2)));
             if (terrainHeight - 10 > _this.position.y && _this.position.distanceTo(lastPosition) < _this.terrain.areaDimensions.width / 2) {
                 _this.angle = Math.atan2(_this.position.y - lastPosition.y, _this.position.x - lastPosition.x);
             }
@@ -102,6 +104,7 @@ var Player = (function () {
         this.onGround = false;
         this.jumps = [];
         this.minY = this.terrain.areaDimensions.height;
+        this.maxSpeed = 0;
         this.addEventListeners();
     }
     Player.prototype.drawImage = function (image, x, y, scale, rotation) {

@@ -23,6 +23,9 @@ let time: Date;
 let startTime: Date;
 let clock: Clock;
 let highscore: number = JSON.parse(localStorage.getItem('highscore')) || 0;
+let stats = JSON.parse(localStorage.getItem('stats')) || {
+    longestJump: 0, highestPoint: 0, gamesPlayed: 0, topSpeed: 0
+};
 let sounds: Sounds = new Sounds();
 
 
@@ -83,12 +86,22 @@ const draw = () => {
     ctx.textAlign = "right";
     ctx.fillText(`Pisin hyppy ${player.longestJump()} m`, areaWidth - 40, 100);
     ctx.fillText(`Maksimikorkeus ${player.highestPoint()} m`, areaWidth - 40, 120);
+    ctx.fillText(`Huippunopeus ${player.topSpeed()} km/h`, areaWidth - 40, 140);
 
     // Clock
     if (startTime) {
         clock.draw(gameDuration * 1000 - (time.getTime() - startTime.getTime()));
     }
 }
+
+const updateHtmlTargets = () => {
+    document.getElementById('result').innerText = "-";
+    document.getElementById('high-score').innerText = highscore.toString();
+    document.getElementById('games-played').innerText = stats.gamesPlayed.toString();
+    document.getElementById('longest-jump').innerText = stats.longestJump.toString();
+    document.getElementById('highest-point').innerText = stats.highestPoint.toString();
+    document.getElementById('top-speed').innerText = stats.topSpeed.toString();
+};
 
 const updateSoundButton = () => {
     let soundButton = document.getElementById('sound');
@@ -108,8 +121,8 @@ const initGame = () => {
     player = new Player(canvas, terrain, new Point(50, 600));
     presents = [new Present(canvas, terrain)];
     time = new Date();
-    document.getElementById('high-score').innerText = highscore.toString();
 
+    updateHtmlTargets();
     updateSoundButton();
 }
 
@@ -137,11 +150,11 @@ const refresh = () => {
     const p = presents[presents.length - 1];
     const playerSize = player.skiWidth;
 
-    if (new Point(player.onScreenX(), player.position.y - playerSize).distanceTo(p.position) < p.width * (3/2)) {
+    if (new Point(player.onScreenX(), player.position.y - playerSize).distanceTo(p.position) < p.width * (3 / 2)) {
         // Pick the present
         p.collected = true;
         presents.push(new Present(canvas, terrain));
-        
+
         sounds.playCollectSound();
     }
 
@@ -159,12 +172,18 @@ const refresh = () => {
         sounds.stopGameTune();
         // sounds.startMainTune();
 
-        if (score > highscore) {
-            // set new high score
-            highscore = score;
-            document.getElementById('high-score').innerText = score.toString();
-            localStorage.setItem('highscore', JSON.stringify(score));
-        }
+        // save the high score
+        highscore = Math.max(highscore, score);
+        localStorage.setItem('highscore', JSON.stringify(highscore));
+        document.getElementById('high-score').innerText = score.toString();
+        
+        // Save stats
+        stats.gamesPlayed += 1;
+        stats.longestJump = Math.max(stats.longestJump || 0, player.longestJump());
+        stats.highestPoint = Math.max(stats.highestPoint || 0, player.highestPoint());
+        stats.topSpeed = Math.max(stats.topSpeed || 0, player.topSpeed());
+        localStorage.setItem('stats', JSON.stringify(stats));
+        updateHtmlTargets();
     }
 };
 
@@ -174,7 +193,7 @@ setAreaDimensions();
 // Draw first frame to the background
 setTimeout(() => {
     draw();
-}, 100);
+}, 200);
 
 window.onresize = setAreaDimensions;
 window.onscroll = setAreaDimensions;
