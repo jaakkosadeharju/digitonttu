@@ -16,6 +16,7 @@ let areaHeight = canvas.height;
 let areaWidth = canvas.width;
 
 const gameDuration = 30;
+let gameExtraTime = 0;
 let terrain: Terrain;
 let player: Player;
 let presents: Present[];
@@ -63,7 +64,7 @@ const calculateFrame = () => {
         dt = 10;
     }
 
-    player.calculateFrame(dt);
+    player.calculateFrame(dt, presents.filter(p => p.collected));
 
     time = t1;
 }
@@ -71,15 +72,12 @@ const calculateFrame = () => {
 const draw = () => {
     drawSky(ctx);
     terrain.draw();
-    player.draw(presents.filter(p => p.collected));
-    presents.forEach((p, i) => {
-        p.draw()
-    });
-
+    
     // Score
     ctx.font = "50px Josefin Sans";
     ctx.textAlign = "right";
     ctx.fillText(`${presents.length - 1}`, areaWidth - 40, 60);
+
 
     // Score
     ctx.font = "14px Josefin Sans";
@@ -90,12 +88,17 @@ const draw = () => {
 
     // Clock
     if (startTime) {
-        clock.draw(gameDuration * 1000 - (time.getTime() - startTime.getTime()));
+        clock.draw((gameDuration + gameExtraTime) * 1000 - (time.getTime() - startTime.getTime()));
     }
+
+    player.draw(presents.filter(p => p.collected));
+    presents.forEach((p, i) => {
+        p.draw();
+    });
 }
 
 const updateHtmlTargets = () => {
-    document.getElementById('result').innerText = "-";
+    document.getElementById('result').innerText = (presents.length - 1).toString();
     document.getElementById('high-score').innerText = highscore.toString();
     document.getElementById('games-played').innerText = stats.gamesPlayed.toString();
     document.getElementById('longest-jump').innerText = stats.longestJump.toString();
@@ -129,10 +132,11 @@ const initGame = () => {
 const startGame = () => {
     initGame();
     startTime = new Date();
+    gameExtraTime = 0;
     time = startTime;
 
     let interval = setInterval(() => {
-        if (startTime.getTime() > (new Date()).getTime() - gameDuration * 1000) {
+        if (startTime.getTime() > (new Date()).getTime() - (gameDuration + gameExtraTime) * 1000) {
             calculateFrame();
         }
         else {
@@ -154,13 +158,15 @@ const refresh = () => {
         // Pick the present
         p.collected = true;
         presents.push(new Present(canvas, terrain));
+        gameExtraTime += 2;
+        clock.extendTime(2);
 
         sounds.playCollectSound();
     }
 
     draw();
 
-    if (startTime.getTime() > (new Date()).getTime() - gameDuration * 1000) {
+    if (startTime.getTime() > (new Date()).getTime() - (gameDuration + gameExtraTime) * 1000) {
         requestAnimationFrame(refresh);
     }
     else {

@@ -71,13 +71,13 @@ export class Player {
         return 0;
     }
 
-    calculateFrame = (dt: number) => {
+    calculateFrame = (dt: number, collectedPresents: Present[]) => {
         if (dt === 0) {
             return;
         }
         // Update history
         this.positionHistory.push(new Point(this.position.x, this.position.y));
-        this.positionHistory.splice(0, Math.max(0, this.positionHistory.length - 1000));
+        this.positionHistory.splice(0, Math.max(0, this.positionHistory.length - (collectedPresents.length + 1) * 10));
         const lastPosition = this.positionHistory[this.positionHistory.length - 5] || this.position;
         const [terrainHeight, terrainAngle] = this.terrain.getHeightAt(this.onScreenX());
 
@@ -187,6 +187,7 @@ export class Player {
 
             this.ctx.textAlign = "left";
             this.ctx.font = "30px Josefin Sans";
+            this.ctx.fillStyle = '#dddddd99';
             this.ctx.fillText(`${Math.round((this.terrain.areaDimensions.height - this.position.y) / 50)} m`, 30, 50);
         }
 
@@ -201,7 +202,7 @@ export class Player {
 
         collectedPresents.forEach((present, i) => {
             let presentSlot = this.positionHistory[this.positionHistory.length - (i + 1) * 10];
-            present.position.x = presentSlot.x - present.width / 2;
+            present.position.x = (presentSlot.x % this.terrain.areaDimensions.width) - present.width / 2;
             present.position.y = presentSlot.y - present.height / 2;
         });
 
@@ -218,12 +219,14 @@ export class Player {
         window.addEventListener('keydown', e => {
             if (e.code == 'Space') {
                 e.preventDefault();
+                document.getElementById('dive').classList.add('active');
                 this.diving = true;
             }
         }, false);
         window.addEventListener('keyup', e => {
             if (e.code == 'Space') {
                 e.preventDefault();
+                document.getElementById('dive').classList.remove('active');
                 this.diving = false;
             }
         }, false);

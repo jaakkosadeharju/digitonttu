@@ -5,6 +5,7 @@ var Sounds = (function () {
         this.gameVolume = 0.2;
         this.fxVolume = 1;
         this.startGameTune = function () {
+            _this.stopGameTune();
             _this.gameTune = new Audio('/audio/sleighride.mp3');
             _this.gameTune.loop = true;
             _this.gameTune.volume = _this.enabled ? _this.gameVolume : 0;
@@ -17,6 +18,7 @@ var Sounds = (function () {
             }
         };
         this.startMainTune = function () {
+            _this.stopMainTune();
             _this.mainTune = new Audio('/audio/drummerboy.mp3');
             _this.mainTune.loop = true;
             _this.mainTune.volume = _this.enabled ? _this.mainVolume : 0;

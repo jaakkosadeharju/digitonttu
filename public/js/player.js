@@ -25,12 +25,12 @@ var Player = (function () {
             }
             return 0;
         };
-        this.calculateFrame = function (dt) {
+        this.calculateFrame = function (dt, collectedPresents) {
             if (dt === 0) {
                 return;
             }
             _this.positionHistory.push(new Point(_this.position.x, _this.position.y));
-            _this.positionHistory.splice(0, Math.max(0, _this.positionHistory.length - 1000));
+            _this.positionHistory.splice(0, Math.max(0, _this.positionHistory.length - (collectedPresents.length + 1) * 10));
             var lastPosition = _this.positionHistory[_this.positionHistory.length - 5] || _this.position;
             var _a = _this.terrain.getHeightAt(_this.onScreenX()), terrainHeight = _a[0], terrainAngle = _a[1];
             if (terrainHeight + 1 <= _this.position.y) {
@@ -129,6 +129,7 @@ var Player = (function () {
             this.ctx.stroke();
             this.ctx.textAlign = "left";
             this.ctx.font = "30px Josefin Sans";
+            this.ctx.fillStyle = '#dddddd99';
             this.ctx.fillText(Math.round((this.terrain.areaDimensions.height - this.position.y) / 50) + " m", 30, 50);
         }
         var player;
@@ -142,7 +143,7 @@ var Player = (function () {
         }
         collectedPresents.forEach(function (present, i) {
             var presentSlot = _this.positionHistory[_this.positionHistory.length - (i + 1) * 10];
-            present.position.x = presentSlot.x - present.width / 2;
+            present.position.x = (presentSlot.x % _this.terrain.areaDimensions.width) - present.width / 2;
             present.position.y = presentSlot.y - present.height / 2;
         });
     };
@@ -151,12 +152,14 @@ var Player = (function () {
         window.addEventListener('keydown', function (e) {
             if (e.code == 'Space') {
                 e.preventDefault();
+                document.getElementById('dive').classList.add('active');
                 _this.diving = true;
             }
         }, false);
         window.addEventListener('keyup', function (e) {
             if (e.code == 'Space') {
                 e.preventDefault();
+                document.getElementById('dive').classList.remove('active');
                 _this.diving = false;
             }
         }, false);

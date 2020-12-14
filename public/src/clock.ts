@@ -5,9 +5,12 @@ export class Clock {
     constructor(ctx: CanvasRenderingContext2D, terrain: Terrain) {
         this.ctx = ctx;
         this.terrain = terrain;
+        this.timeExtensions = [];
     }
 
     terrain: Terrain;
+    timeExtensions: any[];
+    extensionVisible = 5; //  seconds
 
     ctx: CanvasRenderingContext2D;
 
@@ -22,5 +25,25 @@ export class Clock {
         const seconds = Math.max(0, (time / 1000));
         const formatted = Math.round(seconds).toFixed();
         this.ctx.fillText(` ${formatted} s`.replace('.', ','), this.terrain.areaDimensions.width / 2, this.terrain.areaDimensions.height / 2);
+
+        // Draw time extensions
+        this.timeExtensions = this.timeExtensions.filter(t => (new Date()).getTime() < (t.time.getTime() + this.extensionVisible * 1000));
+        this.timeExtensions.forEach((e, i) => {
+            const timeLeft = ((e.time.getTime() + this.extensionVisible * 1000) - (new Date()).getTime()) / 1000;
+            this.ctx.font = "40px Josefin Sans";
+            this.ctx.fillStyle = `rgba(180, 30, 30, ${timeLeft / this.extensionVisible})`;
+            this.ctx.strokeStyle = `rgba(70, 20, 20, ${timeLeft / this.extensionVisible})`;
+            this.ctx.textAlign = "center";
+            const formatted = Math.round(e.seconds).toFixed();
+            this.ctx.fillText(`+ ${formatted} s`.replace('.', ','), this.terrain.areaDimensions.width / 2, this.terrain.areaDimensions.height / 2 + ((1 - timeLeft / this.extensionVisible) * 100));
+            this.ctx.strokeText(`+ ${formatted} s`.replace('.', ','), this.terrain.areaDimensions.width / 2, this.terrain.areaDimensions.height / 2 + ((1 - timeLeft / this.extensionVisible) * 100));
+        });
+    }
+
+    extendTime = (seconds: number) => {
+        this.timeExtensions.push({
+            seconds,
+            time: new Date()
+        })
     }
 }

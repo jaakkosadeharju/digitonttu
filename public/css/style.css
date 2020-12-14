@@ -254,6 +254,7 @@ button#dive {
     box-shadow: 2pt 2pt 5pt #0000007a;
     min-width: 10em;
     font-size: 15pt;
+    line-height: 0.8em;
 }
 
 button#dive:active,

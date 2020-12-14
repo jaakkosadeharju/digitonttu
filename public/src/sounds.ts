@@ -11,6 +11,9 @@ export class Sounds {
     fxVolume = 1;
 
     startGameTune = () => {
+        // Stop if running already;
+        this.stopGameTune();
+
         this.gameTune = new Audio('/audio/sleighride.mp3');
         this.gameTune.loop = true;
         this.gameTune.volume = this.enabled ? this.gameVolume : 0;
@@ -24,6 +27,9 @@ export class Sounds {
         }
     }
     startMainTune = () => {
+        // Stop if running already;
+        this.stopMainTune();
+
         this.mainTune = new Audio('/audio/drummerboy.mp3');
         this.mainTune.loop = true;
         this.mainTune.volume = this.enabled ? this.mainVolume : 0;

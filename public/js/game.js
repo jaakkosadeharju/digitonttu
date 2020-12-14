@@ -12,6 +12,7 @@ canvas.width = window.innerWidth;
 var areaHeight = canvas.height;
 var areaWidth = canvas.width;
 var gameDuration = 30;
+var gameExtraTime = 0;
 var terrain;
 var player;
 var presents;
@@ -49,16 +50,12 @@ var calculateFrame = function () {
     if (dt > 1000) {
         dt = 10;
     }
-    player.calculateFrame(dt);
+    player.calculateFrame(dt, presents.filter(function (p) { return p.collected; }));
     time = t1;
 };
 var draw = function () {
     drawSky(ctx);
     terrain.draw();
-    player.draw(presents.filter(function (p) { return p.collected; }));
-    presents.forEach(function (p, i) {
-        p.draw();
-    });
     ctx.font = "50px Josefin Sans";
     ctx.textAlign = "right";
     ctx.fillText("" + (presents.length - 1), areaWidth - 40, 60);
@@ -68,11 +65,15 @@ var draw = function () {
     ctx.fillText("Maksimikorkeus " + player.highestPoint() + " m", areaWidth - 40, 120);
     ctx.fillText("Huippunopeus " + player.topSpeed() + " km/h", areaWidth - 40, 140);
     if (startTime) {
-        clock.draw(gameDuration * 1000 - (time.getTime() - startTime.getTime()));
+        clock.draw((gameDuration + gameExtraTime) * 1000 - (time.getTime() - startTime.getTime()));
     }
+    player.draw(presents.filter(function (p) { return p.collected; }));
+    presents.forEach(function (p, i) {
+        p.draw();
+    });
 };
 var updateHtmlTargets = function () {
-    document.getElementById('result').innerText = "-";
+    document.getElementById('result').innerText = (presents.length - 1).toString();
     document.getElementById('high-score').innerText = highscore.toString();
     document.getElementById('games-played').innerText = stats.gamesPlayed.toString();
     document.getElementById('longest-jump').innerText = stats.longestJump.toString();
@@ -102,9 +103,10 @@ var initGame = function () {
 var startGame = function () {
     initGame();
     startTime = new Date();
+    gameExtraTime = 0;
     time = startTime;
     var interval = setInterval(function () {
-        if (startTime.getTime() > (new Date()).getTime() - gameDuration * 1000) {
+        if (startTime.getTime() > (new Date()).getTime() - (gameDuration + gameExtraTime) * 1000) {
             calculateFrame();
         }
         else {
@@ -120,10 +122,12 @@ var refresh = function () {
     if (new Point(player.onScreenX(), player.position.y - playerSize).distanceTo(p.position) < p.width * (3 / 2)) {
         p.collected = true;
         presents.push(new Present(canvas, terrain));
+        gameExtraTime += 2;
+        clock.extendTime(2);
         sounds.playCollectSound();
     }
     draw();
-    if (startTime.getTime() > (new Date()).getTime() - gameDuration * 1000) {
+    if (startTime.getTime() > (new Date()).getTime() - (gameDuration + gameExtraTime) * 1000) {
         requestAnimationFrame(refresh);
     }
     else {
