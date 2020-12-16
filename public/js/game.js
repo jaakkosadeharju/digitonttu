@@ -122,8 +122,13 @@ var refresh = function () {
     if (new Point(player.onScreenX(), player.position.y - playerSize).distanceTo(p.position) < p.width * (3 / 2)) {
         p.collected = true;
         presents.push(new Present(canvas, terrain));
-        gameExtraTime += 2;
-        clock.extendTime(2);
+        var timeIncrement = -1 +
+            (terrain.areaDimensions.width / player.velocity.x) *
+                (5 * terrain.areaDimensions.height / terrain.areaDimensions.width) *
+                ((terrain.areaDimensions.width + terrain.areaDimensions.height) / 5000);
+        timeIncrement = Math.min(10, timeIncrement);
+        gameExtraTime += timeIncrement;
+        clock.extendTime(timeIncrement);
         sounds.playCollectSound();
     }
     draw();

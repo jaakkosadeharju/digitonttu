@@ -27,12 +27,15 @@ var Clock = (function () {
         this.timeExtensions.forEach(function (e, i) {
             var timeLeft = ((e.time.getTime() + _this.extensionVisible * 1000) - (new Date()).getTime()) / 1000;
             _this.ctx.font = "40px Josefin Sans";
-            _this.ctx.fillStyle = "rgba(180, 30, 30, " + timeLeft / _this.extensionVisible + ")";
-            _this.ctx.strokeStyle = "rgba(70, 20, 20, " + timeLeft / _this.extensionVisible + ")";
+            if (e.seconds > 0) {
+                _this.ctx.fillStyle = "rgba(30, 220, 30, " + timeLeft / _this.extensionVisible + ")";
+            }
+            else {
+                _this.ctx.fillStyle = "rgba(220, 30, 30, " + timeLeft / _this.extensionVisible + ")";
+            }
             _this.ctx.textAlign = "center";
-            var formatted = Math.round(e.seconds).toFixed();
-            _this.ctx.fillText(("+ " + formatted + " s").replace('.', ','), _this.terrain.areaDimensions.width / 2, _this.terrain.areaDimensions.height / 2 + ((1 - timeLeft / _this.extensionVisible) * 100));
-            _this.ctx.strokeText(("+ " + formatted + " s").replace('.', ','), _this.terrain.areaDimensions.width / 2, _this.terrain.areaDimensions.height / 2 + ((1 - timeLeft / _this.extensionVisible) * 100));
+            var formatted = e.seconds.toFixed(1);
+            _this.ctx.fillText(("" + (e.seconds > 0 ? '+' : '') + formatted + " s").replace('.', ','), _this.terrain.areaDimensions.width / 2, _this.terrain.areaDimensions.height / 2 + ((1 - timeLeft / _this.extensionVisible) * 100));
         });
     };
     return Clock;

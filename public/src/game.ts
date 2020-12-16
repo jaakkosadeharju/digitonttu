@@ -72,7 +72,7 @@ const calculateFrame = () => {
 const draw = () => {
     drawSky(ctx);
     terrain.draw();
-    
+
     // Score
     ctx.font = "50px Josefin Sans";
     ctx.textAlign = "right";
@@ -158,8 +158,18 @@ const refresh = () => {
         // Pick the present
         p.collected = true;
         presents.push(new Present(canvas, terrain));
-        gameExtraTime += 2;
-        clock.extendTime(2);
+        let timeIncrement =
+            -1 +
+            // factor from x-speed
+            (terrain.areaDimensions.width / player.velocity.x) *
+            // dimension factor
+            (5 * terrain.areaDimensions.height / terrain.areaDimensions.width) *
+            // size factor
+            ((terrain.areaDimensions.width + terrain.areaDimensions.height) / 5000);
+
+        timeIncrement = Math.min(10, timeIncrement);
+        gameExtraTime += timeIncrement;
+        clock.extendTime(timeIncrement);
 
         sounds.playCollectSound();
     }
@@ -182,12 +192,12 @@ const refresh = () => {
         highscore = Math.max(highscore, score);
         localStorage.setItem('highscore', JSON.stringify(highscore));
         document.getElementById('high-score').innerText = score.toString();
-        
+
         // Save stats
         stats.gamesPlayed += 1;
         stats.longestJump = Math.max(stats.longestJump || 0, player.longestJump());
-        stats.highestPoint = Math.max(stats.highestPoint || 0, player.highestPoint());
-        stats.topSpeed = Math.max(stats.topSpeed || 0, player.topSpeed());
+        stats.highestPoint = Math.max(stats.highestPoint || 0, player.highestPoint());
+        stats.topSpeed = Math.max(stats.topSpeed || 0, player.topSpeed());
         localStorage.setItem('stats', JSON.stringify(stats));
         updateHtmlTargets();
     }

@@ -130,8 +130,8 @@ body.started #menu-overlay {
     top: 10%;
 }
 body.started #top #left {
-    left: -50%;
-    top: -50%;
+    left: -100%;
+    top: -100%;
 }
 
 #top #right {
@@ -148,8 +148,8 @@ body.started #top #left {
 	animation: float 20s ease-in-out infinite;
 }
 body.started #top #right {
-    right: -50%;
-    top: -50%;
+    right: -100%;
+    top: -100%;
 }
 
 #bottom #left {
@@ -166,8 +166,8 @@ body.started #top #right {
 	animation: float 20s ease-in-out infinite reverse;
 }
 body.started #bottom #left {
-    left: -50%;
-    bottom: -50%;
+    left: -100%;
+    bottom: -100%;
 }
 
 
@@ -179,7 +179,7 @@ body.started #bottom #left {
     bottom: 10%;
 }
 body.started #bottom #right {
-    right: -50%;
+    right: -100%;
     bottom: 150%;
 }
 

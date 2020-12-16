@@ -9,6 +9,7 @@ export class Present {
         this.position = new Point(
             Math.random() * (terrain.areaDimensions.width - this.width),
             Math.random() * (terrain.areaDimensions.height / 2 - this.height));
+        this.visible = true;
     }
 
     canvas: HTMLCanvasElement;
@@ -17,8 +18,13 @@ export class Present {
     collected: boolean;
     width = 29 * (3 / 2);
     height = 28 * (3 / 2);
+    visible: boolean;
 
     public draw() {
+        if (!this.visible) {
+            return false;
+        }
+        
         const ctx = this.ctx;
 
         // ctx.fillStyle = '#f00';

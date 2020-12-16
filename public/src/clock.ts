@@ -31,12 +31,14 @@ export class Clock {
         this.timeExtensions.forEach((e, i) => {
             const timeLeft = ((e.time.getTime() + this.extensionVisible * 1000) - (new Date()).getTime()) / 1000;
             this.ctx.font = "40px Josefin Sans";
-            this.ctx.fillStyle = `rgba(180, 30, 30, ${timeLeft / this.extensionVisible})`;
-            this.ctx.strokeStyle = `rgba(70, 20, 20, ${timeLeft / this.extensionVisible})`;
+            if (e.seconds > 0) {
+                this.ctx.fillStyle = `rgba(30, 220, 30, ${timeLeft / this.extensionVisible})`;
+            } else {
+                this.ctx.fillStyle = `rgba(220, 30, 30, ${timeLeft / this.extensionVisible})`;
+            }
             this.ctx.textAlign = "center";
-            const formatted = Math.round(e.seconds).toFixed();
-            this.ctx.fillText(`+ ${formatted} s`.replace('.', ','), this.terrain.areaDimensions.width / 2, this.terrain.areaDimensions.height / 2 + ((1 - timeLeft / this.extensionVisible) * 100));
-            this.ctx.strokeText(`+ ${formatted} s`.replace('.', ','), this.terrain.areaDimensions.width / 2, this.terrain.areaDimensions.height / 2 + ((1 - timeLeft / this.extensionVisible) * 100));
+            const formatted = e.seconds.toFixed(1);
+            this.ctx.fillText(`${e.seconds > 0 ? '+' : ''}${formatted} s`.replace('.', ','), this.terrain.areaDimensions.width / 2, this.terrain.areaDimensions.height / 2 + ((1 - timeLeft / this.extensionVisible) * 100));
         });
     }
 

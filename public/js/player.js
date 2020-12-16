@@ -30,18 +30,19 @@ var Player = (function () {
                 return;
             }
             _this.positionHistory.push(new Point(_this.position.x, _this.position.y));
-            _this.positionHistory.splice(0, Math.max(0, _this.positionHistory.length - (collectedPresents.length + 1) * 10));
+            _this.positionHistory.splice(0, Math.max(0, _this.positionHistory.length - 1000));
             var lastPosition = _this.positionHistory[_this.positionHistory.length - 5] || _this.position;
             var _a = _this.terrain.getHeightAt(_this.onScreenX()), terrainHeight = _a[0], terrainAngle = _a[1];
-            if (terrainHeight + 1 <= _this.position.y) {
+            if (_this.diving && terrainHeight - 20 <= _this.position.y) {
+                _this.velocity.y += (10 / (dt * 1000)) * Math.sin(terrainAngle);
+                _this.velocity.x += (10 / (dt * 1000)) * Math.cos(-terrainAngle);
+            }
+            if (terrainHeight - 1 <= _this.position.y) {
                 if (_this.jumpStartPos && !_this.onGround && _this.position.x - _this.jumpStartPos > 500) {
                     _this.jumps.push((_this.position.x - _this.jumpStartPos) / 50);
                 }
                 _this.onGround = true;
                 var speed = Math.sqrt(Math.pow(_this.velocity.x, 2) + Math.pow(_this.velocity.y, 2));
-                if (_this.diving) {
-                    speed += (100 / (dt * 1000));
-                }
                 _this.velocity.x += Math.sin(terrainAngle) * (dt * _this.gravity);
                 if (Math.abs(terrainAngle - _this.angle) > (Math.PI / 4)) {
                     speed = Math.min(speed, 100);
@@ -141,11 +142,13 @@ var Player = (function () {
             player = document.getElementById("player-reversed");
             this.drawImageCenter(player, this.onScreenX(), this.position.y, 150, 250, 1 / 5, this.angle);
         }
-        collectedPresents.forEach(function (present, i) {
+        var maxVisiblePresents = 20;
+        collectedPresents.slice(0, maxVisiblePresents).forEach(function (present, i) {
             var presentSlot = _this.positionHistory[_this.positionHistory.length - (i + 1) * 10];
             present.position.x = (presentSlot.x % _this.terrain.areaDimensions.width) - present.width / 2;
             present.position.y = presentSlot.y - present.height / 2;
         });
+        collectedPresents.slice(maxVisiblePresents).forEach(function (p) { return p.visible = false; });
     };
     Player.prototype.addEventListeners = function () {
         var _this = this;
