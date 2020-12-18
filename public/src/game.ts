@@ -1,10 +1,10 @@
-import { Clock } from "./clock.js";
-import { Dimensions } from "./dimensions.js";
-import { Player } from "./player.js";
-import { Point } from "./point.js";
-import { Present } from "./present.js";
-import { Terrain } from "./terrain.js";
-import { Sounds } from "./sounds.js"
+import { Clock } from "./clock";
+import { Dimensions } from "./dimensions";
+import { Player } from "./player";
+import { Point } from "./point";
+import { Present } from "./present";
+import { Terrain } from "./terrain";
+import { Sounds } from "./sounds"
 
 let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("game-area");
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d");

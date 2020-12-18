@@ -1,6 +1,6 @@
-import { Point } from "./point.js";
-import { Present } from "./present.js";
-import { Terrain } from "./terrain.js";
+import { Point } from "./point";
+import { Present } from "./present";
+import { Terrain } from "./terrain";
 
 export class Player {
     lastCalcTime: Date;

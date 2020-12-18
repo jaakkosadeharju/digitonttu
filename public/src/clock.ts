@@ -1,5 +1,4 @@
-import { Point } from "./point.js";
-import { Terrain } from "./terrain.js";
+import { Terrain } from "./terrain";
 
 export class Clock {
     constructor(ctx: CanvasRenderingContext2D, terrain: Terrain) {

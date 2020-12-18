@@ -1,5 +1,5 @@
-import { Point } from "./point.js";
-import { Dimensions } from "./dimensions.js";
+import { Point } from "./point";
+import { Dimensions } from "./dimensions";
 
 export class Terrain {
     constructor(canvas: HTMLCanvasElement, areaDimensions: Dimensions) {

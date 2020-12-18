@@ -1,14 +1,30 @@
 {
-  "name": "canvas-template",
+  "name": "digitonttu",
   "version": "1.0.0",
-  "description": "Canvas template",
+  "description": "Digitonttu",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "webpack --watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "amazon-cognito-identity-js": "^4.5.6",
     "express": "^4.17.1"
-  }
+  },
+  "devDependencies": {
+    "ts-loader": "^8.0.12",
+    "webpack": "^5.11.0",
+    "webpack-cli": "^4.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaakkosadeharju/digitonttu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jaakkosadeharju/digitonttu/issues"
+  },
+  "homepage": "https://github.com/jaakkosadeharju/digitonttu#readme"
 }

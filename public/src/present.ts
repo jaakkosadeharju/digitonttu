@@ -1,5 +1,5 @@
-import { Point } from "./point.js";
-import { Terrain } from "./terrain.js";
+import { Point } from "./point";
+import { Terrain } from "./terrain";
 
 export class Present {
     constructor(canvas: HTMLCanvasElement, terrain: Terrain) {
