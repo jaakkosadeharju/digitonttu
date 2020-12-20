@@ -9,7 +9,7 @@
         "outDir": "public/js"
     },
     "include": [
-        "public/src/**/*"
+        "public/src/**/*",
     ],
     "exclude": [
         "node_modules",

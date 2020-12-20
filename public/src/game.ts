@@ -5,17 +5,18 @@ import { Point } from "./point";
 import { Present } from "./present";
 import { Terrain } from "./terrain";
 import { Sounds } from "./sounds"
+import { UserManagement } from "./user-management";
+import { Api } from "./api";
 
 let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("game-area");
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
-
 
 canvas.height = window.innerHeight;
 canvas.width = window.innerWidth;
 let areaHeight = canvas.height;
 let areaWidth = canvas.width;
 
-const gameDuration = 30;
+const gameDuration = 5;
 let gameExtraTime = 0;
 let terrain: Terrain;
 let player: Player;
@@ -29,6 +30,14 @@ let stats = JSON.parse(localStorage.getItem('stats')) || {
 };
 let sounds: Sounds = new Sounds();
 
+// Initialize user management object
+let userManagement = new UserManagement();
+// userManagement.registerUser("jaakko.sadeharju@gmail.com", "kekkonen", "Jaakko");
+userManagement.login('jaakko.sadeharju@gmail.com', 'kekkonen');
+// userManagement.refreshSession();
+
+// Initialize api
+const api = new Api();
 
 const drawSky = (ctx: CanvasRenderingContext2D) => {
     let bg = ctx.createLinearGradient(0, 0, 0, areaHeight);
@@ -200,6 +209,15 @@ const refresh = () => {
         stats.topSpeed = Math.max(stats.topSpeed || 0, player.topSpeed());
         localStorage.setItem('stats', JSON.stringify(stats));
         updateHtmlTargets();
+
+        if (userManagement.getLoginDetails().username) {
+            const endTime = new Date();
+            api.submitScore(userManagement.getLoginDetails().username, score, stats, startTime, endTime)
+                .then((response: any) => {
+                    console.log("Saved", response);
+                })
+                .catch((e: any) => console.log("Error saving results.", e));
+        }
     }
 };
 
@@ -254,3 +272,27 @@ soundButton.addEventListener('click', e => {
 
     e.preventDefault();
 }, false);
+
+
+// Update top list
+function refreshTop100(): void {
+    api.getTop100()
+        .then(({data}: any) => data)
+        .then((rows: any[]) => {
+            let tbody: HTMLTableSectionElement = document.querySelector('#top-100 tbody');
+            tbody.innerHTML = "";
+
+            rows.forEach(row => {
+                let tr = tbody.insertRow();
+                [row.Nickname, row.Score, row.EndTime].forEach((e: string) => {
+                    let td = tr.insertCell();
+                    td.innerText = e;
+                    tr.appendChild(td);
+                });
+
+                tbody.appendChild(tr);
+            });
+            tbody.append();
+        }).catch((e: any) => console.log("Error getting top 100", e));
+}
+refreshTop100();

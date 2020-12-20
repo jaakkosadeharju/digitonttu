@@ -15,8 +15,8 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'public', 'js'),
-        filename: 'gameBundle.js',
-        sourceMapFilename: "./gameBundle.js.map",
+        filename: 'game-bundle.js',
+        sourceMapFilename: "./game-bundle.js.map",
         pathinfo: true,
     },
     devtool: "source-map",

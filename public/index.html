@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="icon" sizes="192x192" href="android-chrome-192x192.png">
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,200;0,400;0,700;1,200;1,400;1,700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,200;0,400;0,700;1,200;1,400;1,700&display=swap"
+        rel="stylesheet">
     <meta name="theme-color" content="#398049">
     <meta name="description" content="Auta tonttua löytämään pukin kadottamat paketit.">
     <meta property="og:description" content="Auta tonttua löytämään pukin kadottamat paketit.">
@@ -17,8 +19,7 @@
 </head>
 
 <body>
-    <canvas id="game-area" width="1920" height="1080"></canvas>
-    <script src="/js/gameBundle.js" type="module"></script>
+    <script src="/js/game-bundle.js" type="module"></script>
     <img src="/images/tonttu.png" alt="Tonttu" id="player">
     <img src="/images/tonttu_v.png" alt="Tonttu" id="player-reversed">
     <img src="/images/paketti.png" alt="Lahja" id="present">
@@ -29,14 +30,21 @@
     </div>
 
 
+    <canvas id="game-area" width="1920" height="1080"></canvas>
     <button type="button" id="sound">&#128266;</button>
+    <button id="dive">
+        Lisää vauhtia!<br>
+        <span style="font-size:70%; color:#aaa">SPACE</span>
+    </button>
 
-    <div id="top">
-        <div id="left">
-            <h1>
-                Digitonttu
-            </h1>
-            <p>
+    <div id="content">
+
+        <div id="top">
+            <div id="left">
+                <h1>
+                    Digitonttu
+                </h1>
+                <p>
                 <ol>
                     <li>Paina Aloita-nappia</li>
                     <li>Ota vauhtia</li>
@@ -44,52 +52,63 @@
                     <li>Kerää paketteja</li>
                     <li>Aikaa 30 s</li>
                 </ol>
-            </p>
-            <p style="padding: 2em; text-align: center; font-size: 120%;">Auta Digitonttua keräämään pukin hukkaamat lahjat ennen joulua.</p>
+                </p>
+                <p style="padding: 2em; text-align: center; font-size: 120%;">Auta Digitonttua keräämään pukin hukkaamat
+                    lahjat
+                    ennen joulua.</p>
+            </div>
+            <div id="right"></div>
         </div>
-        <div id="right"></div>
-    </div>
-    <div id="bottom">
-        <div id="right">
-            <p>
+        <div id="bottom">
+            <div id="right">
+                <div>
+                    <button type="button" id="start">
+                        Aloita
+                    </button>
+                </div>
+                <p>
                 <h2 style="font-size: 28pt;">
                     Tulos: <span id="result"></span>
                 </h2>
-            </p>
-            <p>
+                </p>
+                <p>
                 <h2>
                     Ennätys: <span id="high-score"></span>
                 </h2>
-            </p>
-            <div>
-                Pelejä pelattu:
-                <span id="games-played"></span>
-            </div>
-            <div>
-                Pisin hyppy:
-                <span id="longest-jump"></span> m
-            </div>
-            <div>
-                Ennätyskorkeus:
-                <span id="highest-point"></span> m
-            </div>
-            <div>
-                Ennätysnopeus:
-                <span id="top-speed"></span> km/h
-            </div>
-            <p>
-                <button type="button" id="start">
-                    Aloita
-                </button>
-            </p>
-        </div>
-        <div id="left"></div>
-    </div>
+                </p>
+                <div>
+                    Pelejä pelattu:
+                    <span id="games-played"></span>
+                </div>
+                <div>
+                    Pisin hyppy:
+                    <span id="longest-jump"></span> m
+                </div>
+                <div>
+                    Ennätyskorkeus:
+                    <span id="highest-point"></span> m
+                </div>
+                <div>
+                    Ennätysnopeus:
+                    <span id="top-speed"></span> km/h
+                </div>
 
-    <button id="dive">
-        Lisää vauhtia!<br>
-        <span style="font-size:70%; color:#aaa">SPACE</span>
-    </button>
+                <h2>Parhaat tulokset</h2>
+                <table id="top-100">
+                    <thead>
+                        <tr>
+                            <th>Nimi</th>
+                            <th>Tulos</th>
+                            <th>Aika</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div id="left"></div>
+        </div>
+    </div>
 </body>
 
 </html>

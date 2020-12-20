@@ -12,12 +12,18 @@
   "license": "ISC",
   "dependencies": {
     "amazon-cognito-identity-js": "^4.5.6",
+    "aws-sdk": "^2.813.0",
+    "axios": "^0.21.0",
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "json-loader": "^0.5.7",
     "ts-loader": "^8.0.12",
     "webpack": "^5.11.0",
     "webpack-cli": "^4.2.0"
+  },
+  "browser": {
+    "crypto": false
   },
   "repository": {
     "type": "git",
