@@ -174,7 +174,9 @@ const refresh = () => {
             // dimension factor
             (5 * terrain.areaDimensions.height / terrain.areaDimensions.width) *
             // size factor
-            ((terrain.areaDimensions.width + terrain.areaDimensions.height) / 5000);
+            ((terrain.areaDimensions.width + terrain.areaDimensions.height) / 5000) *
+            // Time factor (half of the bonus every 30 s)
+            (1 / ((gameDuration + gameExtraTime) / 30));
 
         timeIncrement = Math.min(10, timeIncrement);
         gameExtraTime += timeIncrement;
@@ -277,14 +279,14 @@ soundButton.addEventListener('click', e => {
 // Update top list
 function refreshTop100(): void {
     api.getTop100()
-        .then(({data}: any) => data)
+        .then(({ data }: any) => data)
         .then((rows: any[]) => {
             let tbody: HTMLTableSectionElement = document.querySelector('#top-100 tbody');
             tbody.innerHTML = "";
 
             rows.forEach(row => {
                 let tr = tbody.insertRow();
-                [row.Nickname, row.Score, row.EndTime].forEach((e: string) => {
+                [row.Nickname, row.Score, row.EndDate].forEach((e: string) => {
                     let td = tr.insertCell();
                     td.innerText = e;
                     tr.appendChild(td);
