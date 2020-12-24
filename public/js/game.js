@@ -125,7 +125,8 @@ var refresh = function () {
         var timeIncrement = -1 +
             (terrain.areaDimensions.width / player.velocity.x) *
                 (5 * terrain.areaDimensions.height / terrain.areaDimensions.width) *
-                ((terrain.areaDimensions.width + terrain.areaDimensions.height) / 5000);
+                ((terrain.areaDimensions.width + terrain.areaDimensions.height) / 5000) *
+                (1 / ((gameDuration + gameExtraTime) / 30));
         timeIncrement = Math.min(10, timeIncrement);
         gameExtraTime += timeIncrement;
         clock.extendTime(timeIncrement);

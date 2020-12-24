@@ -165,7 +165,9 @@ const refresh = () => {
             // dimension factor
             (5 * terrain.areaDimensions.height / terrain.areaDimensions.width) *
             // size factor
-            ((terrain.areaDimensions.width + terrain.areaDimensions.height) / 5000);
+            ((terrain.areaDimensions.width + terrain.areaDimensions.height) / 5000) *
+            // Time factor (half of the bonus every 30 s)
+            (1 / ((gameDuration + gameExtraTime) / 30));
 
         timeIncrement = Math.min(10, timeIncrement);
         gameExtraTime += timeIncrement;
