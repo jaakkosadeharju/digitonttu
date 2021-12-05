@@ -1,5 +1,5 @@
 # Digitonttu
 
-Try out at https://d325s9dobkbuwc.cloudfront.net/
+Try out at https://tonttu.sadeharju.ovh/
 
-![alt text](https://d325s9dobkbuwc.cloudfront.net/screenshots/game.jpg)
+![alt text](https://tonttu.sadeharju.ovh/screenshots/game.jpg)
